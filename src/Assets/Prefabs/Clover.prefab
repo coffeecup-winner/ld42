@@ -22,7 +22,7 @@ GameObject:
   - component: {fileID: 212573094320169264}
   - component: {fileID: 114010084760344516}
   m_Layer: 0
-  m_Name: CloverPrefabs
+  m_Name: Clover
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
