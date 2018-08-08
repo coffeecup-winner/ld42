@@ -6,6 +6,7 @@ using UnityEngine;
 
 public class Player : MonoBehaviour {
     private static readonly float Speed = 3.0f;
+    private static readonly float StrafeSpeed = 3.0f;
     private static readonly float RotationSpeed = 170.0f;
 
     void Start() {
@@ -22,10 +23,11 @@ public class Player : MonoBehaviour {
     }
 
     void Update() {
-        float translation = Input.GetAxis("Vertical") * Speed * Time.deltaTime;
+        float y_translation = Input.GetAxis("Vertical") * Speed * Time.deltaTime;
+        float x_translation = Input.GetAxis("Strafe") * StrafeSpeed * Time.deltaTime;
         float rotation = Input.GetAxis("Horizontal") * RotationSpeed * Time.deltaTime;
 
-        transform.Translate(0, translation, 0);
+        transform.Translate(x_translation, y_translation, 0);
         transform.Rotate(0, 0, -rotation);
     }
 }
