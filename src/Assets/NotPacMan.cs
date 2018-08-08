@@ -16,5 +16,6 @@ public class NotPacMan : MonoBehaviour
         Vector3 targetDir = m_player.transform.position - transform.position;
         float toward = Vector3.Angle(targetDir, Vector3.right);
         transform.Rotate(toward * Vector3.forward);
+        transform.rotation = Quaternion.AngleAxis(toward, Vector3.forward);
     }
 }
