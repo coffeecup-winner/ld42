@@ -4,21 +4,20 @@ using System.Linq;
 using UnityEngine;
 
 public class Game : MonoBehaviour {
-    private Transform cloverContainer;
+    public static Game Instance { get; private set; }
 
-    public GameObject Clover;
+    public static Prefabs Prefabs { get; private set; }
 
     void Start() {
-        cloverContainer = GameObject.Find("CloverContainer").transform;
+        Instance = this;
+        Prefabs = GameObject.Find("Prefabs").GetComponent<Prefabs>();
+
+        Debug.Log(Prefabs == null
+                  ? "Failed to find a Prefabs child"
+                  : "Initialized Prefabs container");
     }
-	
+
     void Update() {
-        if (cloverContainer.childCount < 3) {
-            var clover = Instantiate(Clover,
-                new Vector3(Random.Range(-15.0f, 15.0f), Random.Range(-5.0f, 5.0f), 0),
-                Quaternion.identity);
-            
-            clover.transform.parent = cloverContainer;
-        }
+
     }
 }
