@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Ground : MonoBehaviour {
+public class Block : MonoBehaviour {
     private Color normalColor;
     private Color mouseOverColor;
 
@@ -25,6 +25,6 @@ public class Ground : MonoBehaviour {
     }
 
     void OnMouseDown() {
-        Game.Instance.OnGroundMouseDown(gameObject);
+        Game.Instance.OnBlockMouseDown(gameObject);
     }
 }
