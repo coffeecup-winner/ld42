@@ -7,21 +7,15 @@ using UnityEngine;
 public class Game : MonoBehaviour {
     public static Game Instance { get; private set; }
 
-    private Transform blocksLayer;
+    private Transform figures;
 
     void Start() {
         Instance = this;
-        blocksLayer = new GameObject("BlocksLayer").transform;
-        blocksLayer.SetParent(transform);
+        figures = new GameObject("Figures").transform;
+        figures.SetParent(transform);
 
-        GenerateRandomBlock(1, 1);
-    }
-
-    void GenerateRandomBlock(int w, int h) {
-        var pfBlock = Resources.Load<GameObject>("Prefabs/Block");
-        // TODO: for now generate a 1x1 block
-        var block = Instantiate(pfBlock);
-        block.transform.SetParent(blocksLayer);
+        var figure = Figure.GenerateRandomFigure(1, 1);
+        figure.transform.SetParent(figures);
     }
 
     void Update() {
