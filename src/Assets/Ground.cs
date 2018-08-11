@@ -23,4 +23,8 @@ public class Ground : MonoBehaviour {
     void OnMouseExit() {
         GetComponent<SpriteRenderer>().color = normalColor;
     }
+
+    void OnMouseDown() {
+        Game.Instance.OnGroundMouseDown(gameObject);
+    }
 }
