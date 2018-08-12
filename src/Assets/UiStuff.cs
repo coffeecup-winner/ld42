@@ -30,7 +30,7 @@ public class UiStuff : MonoBehaviour
 
         if (draggedBlock) {
             var figure = draggedBlock.parent;
-            figure.position = mouseWorld - draggedBlock.localPosition - (Vector3)(0.5f * Vector2.one);
+            figure.position = mouseWorld - draggedBlock.localPosition;
             return;
         }
 
