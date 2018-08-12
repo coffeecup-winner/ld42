@@ -52,8 +52,9 @@ public class Figure : MonoBehaviour {
         for (int x = 0; x < w; x++) {
             for (int y = 0; y < h; y++) {
                 if (figureScript.blocks[x, y] > 0) {
-                    var block = Instantiate(pfBlock, new Vector3(x, y, 0.0f), Quaternion.identity);
+                    var block = Instantiate(pfBlock);
                     block.transform.SetParent(figure.transform);
+                    block.transform.localPosition = new Vector3(x, y, 0.0f);
                     int hasLeft = x > 0 && figureScript.blocks[x - 1, y] > 0 ? 0 : 1;
                     int hasTop = y < h - 1 && figureScript.blocks[x, y + 1] > 0 ? 0 : 1;
                     int hasRight = x < w - 1 && figureScript.blocks[x + 1, y] > 0 ? 0 : 1;
