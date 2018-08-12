@@ -5,9 +5,6 @@ using System.Linq;
 using UnityEngine;
 
 public class Saw : MonoBehaviour {
-    void Start() {
-    }
-
     void Update() {
         GameObject blockLeft = null;
         GameObject blockRight = null;

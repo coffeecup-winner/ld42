@@ -55,6 +55,7 @@ public class Game : MonoBehaviour {
         var tools = GameObject.Find("Tools").transform;
         var pfWall = Resources.Load<GameObject>("Prefabs/Wall");
         var pfSaw = Resources.Load<GameObject>("Prefabs/Saw");
+        var pfRotator = Resources.Load<GameObject>("Prefabs/Rotator");
 
         int emptyX1 = levelWidthBeforeGreen;
         int emptyX2 = emptyX1 + 1 + levelWidthGreenToRed;
@@ -85,5 +86,9 @@ public class Game : MonoBehaviour {
         var saw = Instantiate(pfSaw);
         saw.transform.SetParent(tools);
         saw.transform.localPosition = new Vector3(4.0f, 2.0f, 0.0f);
+
+        var rotator = Instantiate(pfRotator);
+        rotator.transform.SetParent(tools);
+        rotator.transform.localPosition = new Vector3(8.0f, 2.0f, 0.0f);
     }
 }

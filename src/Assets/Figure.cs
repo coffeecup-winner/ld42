@@ -92,7 +92,11 @@ public class Figure : MonoBehaviour {
         }
     }
 
-    public void Cut(int x0, int x1, int y) {
+    public void Rotate3x3(float rotatorAreaMinX, float rotatorAreaMinY) {
+        // TODO
+    }
+
+    void Cut(int x0, int x1, int y) {
         int v0 = blocks[x0, y];
         int v1 = blocks[x1, y];
 
@@ -211,15 +215,6 @@ public class Figure : MonoBehaviour {
         }
 
         return clone;
-    }
-
-    void Update() {
-        if (Input.GetAxis("Vertical") < 0) {
-            Cut(0, 1, 0);
-        }
-        if (Input.GetAxis("Vertical") > 0) {
-            Cut(0, 1, 1);
-        }
     }
 
     // Visuals
