@@ -5,10 +5,10 @@ using UnityEngine;
 public class UiStuff : MonoBehaviour
 {
     Transform figureContainer;
-    Transform draggedThing;
+    Transform draggedBlock;
 
     void Awake() {
-        draggedThing = null;
+        draggedBlock = null;
     }
 
     void Start() {
@@ -16,27 +16,36 @@ public class UiStuff : MonoBehaviour
     }
     
     void Update() {
+        UpdateDragging();
+    }
+
+    void UpdateDragging() {
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0;
 
         // true for one frame only
         if (Input.GetMouseButtonUp(0)) {
-            draggedThing = null;
+            draggedBlock = null;
         }
 
-        if (draggedThing) {
-            draggedThing.position = mouseWorld - (Vector3)(0.5f * Vector2.one);
+        if (draggedBlock) {
+            var figure = draggedBlock.parent;
+            figure.position = mouseWorld - draggedBlock.localPosition - (Vector3)(0.5f * Vector2.one);
             return;
         }
 
         // true for one frame only
         if (Input.GetMouseButtonDown(0)) {
-            Collider2D x = Physics2D.OverlapPoint(mouseWorld);
-            if (x) {
-                draggedThing = x.transform;
-                x.GetComponent<SpriteRenderer>().color = Color.red;
+            Collider2D collider = Physics2D.OverlapPoint(mouseWorld);
+            if (!collider) {
+                return;
             }
+            var block = collider.GetComponent<Block>();
+            if (block) {
+                draggedBlock = block.transform;
+                return;
+            }
+            // todo: drag buildings
         }
-
     }
 }

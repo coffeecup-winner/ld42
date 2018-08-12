@@ -15,6 +15,7 @@ public class Game : MonoBehaviour {
 
         var figure = Figure.GenerateRandomFigure(2, 2);
         figure.transform.SetParent(figures);
+        figure.transform.localPosition = Vector3.zero;
     }
 
     void Update() {
