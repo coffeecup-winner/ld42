@@ -37,49 +37,41 @@ public class UiStuff : MonoBehaviour
         if (draggedBlock) {
             Vector2 currentPos = (Vector2)draggedBlock.position;
             Vector2 snappedPos = new Vector2(Mathf.Round(currentPos.x), Mathf.Round(currentPos.y));
-            Vector2 toTarget = (Vector2)mouseWorld - currentPos;
-            Vector2 delta = (Vector2)mouseWorld - snappedPos;
+            Vector2 posToTarget = (Vector2)mouseWorld - currentPos;
+            Vector2 gridToTarget = (Vector2)mouseWorld - snappedPos;
+            Vector2 absDelta = new Vector2(Mathf.Abs(gridToTarget.x), Mathf.Abs(gridToTarget.y));
             Vector3 outputMove = Vector3.zero;
 
-            if (Mathf.Abs(delta.x) >= 1.0f || Mathf.Abs(delta.y) > 1.0f) {
+            if (absDelta.x >= 1.0f || absDelta.y >= 1.0f) {
                 // long drag: move along the major axis, snap to the minor one
-                if (Mathf.Abs(delta.y) >= Mathf.Abs(delta.x)) {
-                    // snap to x, move along y
-                    outputMove.x = Mathf.Round(currentPos.x) - currentPos.x;
-                    outputMove.y = Mathf.Clamp(toTarget.y, -1.0f, 1.0f);
+                float major = Mathf.Max(absDelta.x, absDelta.y);
+                float minor = Mathf.Min(absDelta.x, absDelta.y);
+                float snappiness = Mathf.Clamp01(major / 100 * Mathf.Max(0.1f, minor));
 
-                    // if (toTarget.sqrMagnitude > 0.0001f) {
-                    //     Debug.Log(string.Format(
-                    //         "xSnap pos=({0:0.00}, {1:0.00}) drag=({2:0.00}, {3:0.00}), delta=({4:0.00} {5:0.00}), out=({6:0.00} {7:0.00})",
-                    //         currentPos.x, currentPos.y, toTarget.x, toTarget.y, delta.x, delta.y, outputMove.x, outputMove.y
-                    //     ));
-                    // }
+                if (absDelta.y >= absDelta.x) {
+                    // snap to x, move along y
+                    outputMove.x = snappiness * (Mathf.Round(currentPos.x) - currentPos.x);
+                    outputMove.y = Mathf.Clamp(posToTarget.y, -1.0f, 1.0f);
+                    Debug.Log(string.Format("x snap gridToTarget=({0:0.00}, {1:0.00})", gridToTarget.x, gridToTarget.y));
                 }
                 else {
                     // move along x, snap to y
-                    outputMove.x = Mathf.Clamp(toTarget.x, -1.0f, 1.0f);
-                    outputMove.y = Mathf.Round(currentPos.y) - currentPos.y;
-
-                    // if (toTarget.sqrMagnitude > 0.0001f) {
-                    //     Debug.Log(string.Format(
-                    //         "ySnap pos=({0:0.00}, {1:0.00}) drag=({2:0.00}, {3:0.00}), delta=({4:0.00} {5:0.00}), out=({6:0.00} {7:0.00})",
-                    //         currentPos.x, currentPos.y, toTarget.x, toTarget.y, delta.x, delta.y, outputMove.x, outputMove.y
-                    //     ));
-                    // }
+                    outputMove.x = Mathf.Clamp(posToTarget.x, -1.0f, 1.0f);
+                    outputMove.y = snappiness * (Mathf.Round(currentPos.y) - currentPos.y);
                 }
             }
             else {
                 // short drag: allow free movement within the vicinity of the nearest gridpoint
-                float d = 1.00f;  // [0, 1] default 0.5, higher is looser (how far away the circle is from the gridpoint)
-                float r = 0.90f;  // [0, 1] default 0.5, higher is tigher (circle radius)
-                var circleCenter = new Vector2(delta.x >= 0 ? d : (-d), delta.y >= 0 ? d : (-d));
-                float t = RaycastVectorCircle(delta, circleCenter, r);
-                outputMove = (snappedPos + t * delta) - currentPos;
+                float d = 0.50f;  // [0, 1] default 0.5, higher is looser (how far away the circle is from the gridpoint)
+                float r = 0.45f;  // [0, 1] default 0.5, higher is tigher (circle radius)
+                var circleCenter = new Vector2(gridToTarget.x >= 0 ? d : (-d), gridToTarget.y >= 0 ? d : (-d));
+                float t = RaycastVectorCircle(gridToTarget, circleCenter, r);
+                outputMove = (snappedPos + t * gridToTarget) - currentPos;
 
-                // if (toTarget.sqrMagnitude > 0.0001f) {
+                // if (posToTarget.sqrMagnitude > 0.0001f) {
                 //     Debug.Log(string.Format(
-                //         "short pos=({0:0.00}, {1:0.00}) drag=({2:0.00}, {3:0.00}), delta=({4:0.00} {5:0.00}), out=({6:0.00} {7:0.00}), t={8:0.00}",
-                //         currentPos.x, currentPos.y, toTarget.x, toTarget.y, delta.x, delta.y, outputMove.x, outputMove.y, t
+                //         "short pos=({0:0.00}, {1:0.00}) drag=({2:0.00}, {3:0.00}), gridToTarget=({4:0.00} {5:0.00}), out=({6:0.00} {7:0.00}), t={8:0.00}",
+                //         currentPos.x, currentPos.y, posToTarget.x, posToTarget.y, gridToTarget.x, gridToTarget.y, outputMove.x, outputMove.y, t
                 //     ));
                 // }
             }
