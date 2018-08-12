@@ -124,4 +124,21 @@ public class Game : MonoBehaviour {
         rotator.transform.SetParent(tools);
         rotator.transform.localPosition = new Vector3(8.0f, 2.0f, 0.0f);
     }
+
+    public bool[,] GetCollisionField(HashSet<GameObject> exclude) {
+        var field = new bool[levelWidth, levelHeight];
+
+        var activeObjects = GameObject.FindGameObjectsWithTag("Figure")
+            .Concat(GameObject.FindGameObjectsWithTag("Tool"))
+            .Where(o => !exclude.Contains(o));
+        foreach (var obj in activeObjects) {
+            int ox = (int)Math.Round(obj.transform.position.x);
+            int oy = (int)Math.Round(obj.transform.position.y);
+            foreach (var pos in obj.GetComponent<IMovable>().EnumerateAllFilledBlocks()) {
+                field[ox + (int)pos.x, oy + (int)pos.y] = true;
+            }
+        }
+
+        return field;
+    }
 }

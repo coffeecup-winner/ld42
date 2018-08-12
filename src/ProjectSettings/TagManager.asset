@@ -6,6 +6,7 @@ TagManager:
   tags:
   - Figure
   - Block
+  - Tool
   layers:
   - Default
   - TransparentFX

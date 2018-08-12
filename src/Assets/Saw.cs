@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Saw : MonoBehaviour {
+public class Saw : MonoBehaviour, IMovable {
     void Update() {
         GameObject blockLeft = null;
         GameObject blockRight = null;
@@ -23,5 +23,14 @@ public class Saw : MonoBehaviour {
         }
 
         blockRight.transform.parent.GetComponent<Figure>().CutRightOf(blockLeft);
+    }
+
+    public IEnumerable<Vector2> EnumerateAllFilledBlocks() {
+        yield return new Vector2(0, 0);
+        yield return new Vector2(1, 0);
+    }
+
+    public void GetAllowedMoves(out bool left, out bool top, out bool right, out bool bottom) {
+        throw new NotImplementedException();
     }
 }

@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Rotator : MonoBehaviour {
+public class Rotator : MonoBehaviour, IMovable {
     void OnMouseDown() {
         var clickPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
@@ -42,5 +42,15 @@ public class Rotator : MonoBehaviour {
         foreach (var group in groups) {
             group.Key.GetComponent<Figure>().Rotate3x3(transform.position.x, transform.position.y + 1.0f);
         }
+    }
+
+    public IEnumerable<Vector2> EnumerateAllFilledBlocks() {
+        yield return new Vector2(0, 0);
+        yield return new Vector2(1, 0);
+        yield return new Vector2(2, 0);
+    }
+
+    public void GetAllowedMoves(out bool left, out bool top, out bool right, out bool bottom) {
+        throw new NotImplementedException();
     }
 }

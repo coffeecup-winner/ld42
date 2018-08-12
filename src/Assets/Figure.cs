@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
-public class Figure : MonoBehaviour {
+public class Figure : MonoBehaviour, IMovable {
     private static int IdGen = 0;
 
     public static GameObject GenerateRandomFigure(int w, int h, BlockType type) {
@@ -239,5 +239,38 @@ public class Figure : MonoBehaviour {
         string sprite = string.Format("Textures/block_{0}{1}{2}{3}", leftBorder, topBorder, rightBorder, bottomBorder);
         Debug.Log(string.Format("[{0},{1}]: {2}", x, y, sprite));
         return Resources.Load<Sprite>(sprite);
+    }
+
+    public IEnumerable<Vector2> EnumerateAllFilledBlocks() {
+        for (int x = 0; x < Width; x++) {
+            for (int y = 0; y < Height; y++) {
+                if (blocks[x, y] > 0) {
+                    yield return new Vector2(x, y);
+                }
+            }
+        }
+    }
+
+    public void GetAllowedMoves(out bool left, out bool top, out bool right, out bool bottom) {
+        var collisionField = Game.Instance.GetCollisionField(new HashSet<GameObject> { gameObject });
+
+        var positions = EnumerateAllFilledBlocks()
+            .Select(p => new Vector2(p.x + (int)Math.Round(transform.position.x), p.y + (int)Math.Round(transform.position.y)));
+
+        Func<Vector2, bool> isAllowed = p => p.x >= 0 && p.x < Game.levelWidth &&
+            p.y >= 0 && p.y < Game.levelHeight &&
+            !collisionField[(int)p.x, (int)p.y];
+
+        left = positions.Select(p => p += new Vector2(-1, 0)).All(isAllowed);
+        top = positions.Select(p => p += new Vector2(0, 1)).All(isAllowed);
+        right = positions.Select(p => p += new Vector2(1, 0)).All(isAllowed);
+        bottom = positions.Select(p => p += new Vector2(0, -1)).All(isAllowed);
+    }
+
+    void Update() {
+        bool left, top, right, bottom;
+
+        GetAllowedMoves(out left, out top, out right, out bottom);
+        Debug.Log(string.Format("Allowed moves: {0}, {1}, {2}, {3}", left, top, right, bottom));
     }
 }
