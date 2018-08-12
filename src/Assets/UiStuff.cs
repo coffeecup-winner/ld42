@@ -23,57 +23,69 @@ public class UiStuff : MonoBehaviour
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0;
 
+        if (draggedBlock)
+
         // true for one frame only
         if (Input.GetMouseButtonUp(0)) {
-            var t = draggedBlock.parent;
-            t.position = new Vector3(Mathf.Round(t.position.x), Mathf.Round(t.position.y));
-            draggedBlock = null;
+            if (draggedBlock) {
+                var t = draggedBlock.parent;
+                t.position = new Vector3(Mathf.Round(t.position.x), Mathf.Round(t.position.y));
+                draggedBlock = null;
+            }
         }
 
         if (draggedBlock) {
-            var currentPos = (Vector2)draggedBlock.position;
-            var snappedPos = new Vector2(Mathf.Round(currentPos.x), Mathf.Round(currentPos.y));
-            var delta = (Vector2)mouseWorld - currentPos;
-            var copy = new Vector2(delta.x, delta.y);
+            Vector2 currentPos = (Vector2)draggedBlock.position;
+            Vector2 snappedPos = new Vector2(Mathf.Round(currentPos.x), Mathf.Round(currentPos.y));
+            Vector2 toTarget = (Vector2)mouseWorld - currentPos;
+            Vector2 delta = (Vector2)mouseWorld - snappedPos;
+            Vector3 outputMove = Vector3.zero;
 
-            // Debug.Log(string.Format("target = ({0:0.00}, {1:0.00})", mouseWorld.x, mouseWorld.y));
+            if (Mathf.Abs(delta.x) >= 1.0f || Mathf.Abs(delta.y) > 1.0f) {
+                // long drag: move along the major axis, snap to the minor one
+                if (Mathf.Abs(delta.y) >= Mathf.Abs(delta.x)) {
+                    // snap to x, move along y
+                    outputMove.x = Mathf.Round(currentPos.x) - currentPos.x;
+                    outputMove.y = Mathf.Clamp(toTarget.y, -1.0f, 1.0f);
 
-            // the smaller this coefficient (0 - 0.5), the more figures get stuck when dragging
-            // when it's large, they're slippery and easily snap to grid (in the minor direction)
-            bool xSnap = Mathf.Abs(currentPos.x - snappedPos.x) < 0.4f;
-            bool ySnap = Mathf.Abs(currentPos.y - snappedPos.y) < 0.4f;
-            if (!xSnap && !ySnap) {
-                // this should never happen, but snap to whichever axis is the closest
-                Debug.LogWarning("UiStuff.UpdateDragging: block snapped to neither axis!", draggedBlock);
-                xSnap = Mathf.Abs(currentPos.x - snappedPos.x) <= Mathf.Abs(currentPos.y - snappedPos.y);
-                ySnap = !xSnap;
-            }
-            else if (xSnap && ySnap) {
-                // allow free movement in the close vicinity of the grid points
-                if (((currentPos + delta) - snappedPos).sqrMagnitude <= 0.1 * 0.1) {
-                    // snapping on either axis in this case would lead to oscillating between two points
-                    xSnap = ySnap = false;  // todo: figure out how to not oscillate
+                    // if (toTarget.sqrMagnitude > 0.0001f) {
+                    //     Debug.Log(string.Format(
+                    //         "xSnap pos=({0:0.00}, {1:0.00}) drag=({2:0.00}, {3:0.00}), delta=({4:0.00} {5:0.00}), out=({6:0.00} {7:0.00})",
+                    //         currentPos.x, currentPos.y, toTarget.x, toTarget.y, delta.x, delta.y, outputMove.x, outputMove.y
+                    //     ));
+                    // }
                 }
-                else {  // if leaving the cozy grid point, then snap based on the direction of the drag
-                    xSnap = Mathf.Abs(delta.y) >= Mathf.Abs(delta.x);
-                    ySnap = !xSnap;
+                else {
+                    // move along x, snap to y
+                    outputMove.x = Mathf.Clamp(toTarget.x, -1.0f, 1.0f);
+                    outputMove.y = Mathf.Round(currentPos.y) - currentPos.y;
+
+                    // if (toTarget.sqrMagnitude > 0.0001f) {
+                    //     Debug.Log(string.Format(
+                    //         "ySnap pos=({0:0.00}, {1:0.00}) drag=({2:0.00}, {3:0.00}), delta=({4:0.00} {5:0.00}), out=({6:0.00} {7:0.00})",
+                    //         currentPos.x, currentPos.y, toTarget.x, toTarget.y, delta.x, delta.y, outputMove.x, outputMove.y
+                    //     ));
+                    // }
                 }
             }
+            else {
+                // short drag: allow free movement within the vicinity of the nearest gridpoint
+                float d = 1.00f;  // [0, 1] default 0.5, higher is looser (how far away the circle is from the gridpoint)
+                float r = 0.90f;  // [0, 1] default 0.5, higher is tigher (circle radius)
+                var circleCenter = new Vector2(delta.x >= 0 ? d : (-d), delta.y >= 0 ? d : (-d));
+                float t = RaycastVectorCircle(delta, circleCenter, r);
+                outputMove = (snappedPos + t * delta) - currentPos;
 
-            if (xSnap) {  // snap to x, move along y
-                delta.x = Mathf.Round(currentPos.x) - currentPos.x;
-                delta.y = Mathf.Clamp(delta.y, -1.0f, 1.0f);
-                // Debug.Log(string.Format("xSnap ({0:0.00}, {1:0.00}) => ({2:0.00} {3:0.00})", copy.x, copy.y, delta.x, delta.y));
-            }
-
-            if (ySnap) {  // move along x, snap to y
-                delta.x = Mathf.Clamp(delta.x, -1.0f, 1.0f);
-                delta.y = Mathf.Round(currentPos.y) - currentPos.y;
-                // Debug.Log(string.Format("ySnap ({0:0.00}, {1:0.00}) => ({2:0.00} {3:0.00})", copy.x, copy.y, delta.x, delta.y));
+                // if (toTarget.sqrMagnitude > 0.0001f) {
+                //     Debug.Log(string.Format(
+                //         "short pos=({0:0.00}, {1:0.00}) drag=({2:0.00}, {3:0.00}), delta=({4:0.00} {5:0.00}), out=({6:0.00} {7:0.00}), t={8:0.00}",
+                //         currentPos.x, currentPos.y, toTarget.x, toTarget.y, delta.x, delta.y, outputMove.x, outputMove.y, t
+                //     ));
+                // }
             }
 
             // move the figure, not the block
-            draggedBlock.parent.position += (Vector3)delta;
+            draggedBlock.parent.position += outputMove;
             // Debug.Log(string.Format("pos = ({0:0.00}, {1:0.00})", draggedBlock.parent.position.x, draggedBlock.parent.position.y));
             return;
         }
@@ -91,5 +103,27 @@ public class UiStuff : MonoBehaviour
             }
             // todo: drag buildings
         }
+    }
+
+    public static float RaycastVectorCircle(Vector2 v, Vector2 center, float r) {
+        // WARNING: this doesn't work in the general case
+        // some assumptions:
+        //   v is anchored at (0, 0)
+        //   v is bounded by center - (r, r) and center + (r, r)
+        // returns a float close to
+        //   0 if (0, 0) is within the circle
+        //   1 if v doesn't intersect the circle at all
+        //   t such that v*t is the intersection point
+        float a = 0;
+        float b = 1;
+        float rr = r * r;
+        for (int i = 0; i < 12; ++i) {
+            float s = 0.5f * (a + b);
+            if ((v * s - center).sqrMagnitude < rr)
+                b = s;
+            else
+                a = s;
+        }
+        return a;
     }
 }
