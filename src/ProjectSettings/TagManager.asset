@@ -3,7 +3,9 @@
 --- !u!78 &1
 TagManager:
   serializedVersion: 2
-  tags: []
+  tags:
+  - Figure
+  - Block
   layers:
   - Default
   - TransparentFX
@@ -44,6 +46,9 @@ TagManager:
   - name: Ground
     uniqueID: 270948749
     locked: 0
-  - name: Towers
+  - name: Figures
     uniqueID: 2042070107
+    locked: 0
+  - name: Tools Overlay
+    uniqueID: 3567422497
     locked: 0

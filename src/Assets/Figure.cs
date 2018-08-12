@@ -73,12 +73,30 @@ public class Figure : MonoBehaviour {
         return blocks[x, y] > 0;
     }
 
+    public void CutRightOf(GameObject blockLeft) {
+        // TODO: Create a block => id map if slow
+        for (int id = 0; id <= Width * Height; id++) {
+            if (visualBlocks.ContainsKey(id)) {
+                if (visualBlocks[id] == blockLeft) {
+                    // TODO: Create an id => (x, y) map if slow
+                    for (int x = 0; x < Width; x++) {
+                        for (int y = 0; y < Height; y++) {
+                            if (blocks[x, y] == id) {
+                                Cut(x, x + 1, y);
+                                return;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     public void Cut(int x0, int x1, int y) {
         int v0 = blocks[x0, y];
         int v1 = blocks[x1, y];
 
         if (!links[v0].Contains(v1)) {
-            Debug.Log(string.Format("({0},{1}) <-> ({2},{3}): no link to cut", x0, y, x1, y));
             return;
         }
 

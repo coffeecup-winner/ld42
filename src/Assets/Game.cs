@@ -52,7 +52,9 @@ public class Game : MonoBehaviour {
 
     private void generateLevel() {
         var level = GameObject.Find("Level").transform;
+        var tools = GameObject.Find("Tools").transform;
         var pfWall = Resources.Load<GameObject>("Prefabs/Wall");
+        var pfSaw = Resources.Load<GameObject>("Prefabs/Saw");
 
         int emptyX1 = levelWidthBeforeGreen;
         int emptyX2 = emptyX1 + 1 + levelWidthGreenToRed;
@@ -79,5 +81,9 @@ public class Game : MonoBehaviour {
             wall.transform.SetParent(level);
             wall.transform.localPosition = (Vector3)pos;
         }
+
+        var saw = Instantiate(pfSaw);
+        saw.transform.SetParent(tools);
+        saw.transform.localPosition = new Vector3(4.0f, 2.0f, 0.0f);
     }
 }
