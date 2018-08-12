@@ -56,9 +56,7 @@ public class Figure : MonoBehaviour {
                     block.transform.localPosition = new Vector3(x, y, 0.0f);
                     var renderer = block.GetComponent<SpriteRenderer>();
                     renderer.sprite = figureScript.GetSprite(x, y);
-                    renderer.color = type == BlockType.Green ? Game.Instance.green
-                                   : type == BlockType.Blue ? Game.Instance.blue
-                                   : Game.Instance.red;
+                    renderer.color = Game.TypeToColor(type);
                     figureScript.visualBlocks.Add(figureScript.blocks[x, y], block);
                 }
             }

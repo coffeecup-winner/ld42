@@ -34,6 +34,12 @@ public class Game : MonoBehaviour {
     public static int levelWidth { get; private set; }
     public static int levelHeight { get; private set; }
 
+    public static Color TypeToColor(BlockType type) {
+        return type == BlockType.Green ? Game.Instance.green
+            : type == BlockType.Blue ? Game.Instance.blue
+            : Game.Instance.red;
+    }
+
     void Awake() {
         levelWidth = 3 + levelWidthBeforeGreen + levelWidthGreenToRed + levelWidthRedToBlue + levelWidthAfterBlue;
         levelHeight = levelPlayableHeight;
@@ -65,6 +71,7 @@ public class Game : MonoBehaviour {
         var level = GameObject.Find("Level").transform;
         var tools = GameObject.Find("Tools").transform;
         var pfWall = Resources.Load<GameObject>("Prefabs/Wall");
+        var pfOutput = Resources.Load<GameObject>("Prefabs/Output");
         var pfSaw = Resources.Load<GameObject>("Prefabs/Saw");
         var pfRotator = Resources.Load<GameObject>("Prefabs/Rotator");
 
@@ -73,11 +80,14 @@ public class Game : MonoBehaviour {
         int emptyX3 = emptyX2 + 1 + levelWidthRedToBlue;
 
         var wallPositions = new List<Vector2>();
+        var outputPositions = new List<Vector2>();
         for (int x = -1; x <= levelWidth; x += 1) {
             wallPositions.Add(new Vector2(x, -2));
             // the bottom layer needs gaps for color outputs
             if (x != emptyX1 && x != emptyX2 && x != emptyX3)
                 wallPositions.Add(new Vector2(x, -1));
+            else
+                outputPositions.Add(new Vector2(x, -1));
             // the top layer has a gap
             if (x < 0 || x > levelHoleSize)
                 wallPositions.Add(new Vector2(x, levelHeight));
@@ -94,11 +104,23 @@ public class Game : MonoBehaviour {
             wall.transform.localPosition = (Vector3)pos;
         }
 
+        var types = new[] { BlockType.Green, BlockType.Red, BlockType.Blue };
+        for (int i = 0; i < 3; i++) {
+            var output = Instantiate(pfOutput);
+            output.name = string.Format("Output ({0})", types[i]);
+            output.GetComponent<Output>().Type = types[i];
+            output.GetComponent<SpriteRenderer>().color = TypeToColor(types[i]);
+            output.transform.SetParent(tools);
+            output.transform.localPosition = (Vector3)outputPositions[i];
+        }
+
         var saw = Instantiate(pfSaw);
+        saw.name = "Saw";
         saw.transform.SetParent(tools);
         saw.transform.localPosition = new Vector3(4.0f, 2.0f, 0.0f);
 
         var rotator = Instantiate(pfRotator);
+        rotator.name = "Rotator";
         rotator.transform.SetParent(tools);
         rotator.transform.localPosition = new Vector3(8.0f, 2.0f, 0.0f);
     }
