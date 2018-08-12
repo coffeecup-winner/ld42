@@ -16,15 +16,16 @@ public class Block : MonoBehaviour {
     void Update() {
     }
 
-    void OnMouseEnter() {
-        GetComponent<SpriteRenderer>().color = mouseOverColor;
-    }
+    // see UiStuff.update instead
+    // void OnMouseEnter() {
+    //     GetComponent<SpriteRenderer>().color = mouseOverColor;
+    // }
 
-    void OnMouseExit() {
-        GetComponent<SpriteRenderer>().color = normalColor;
-    }
+    // void OnMouseExit() {
+    //     GetComponent<SpriteRenderer>().color = normalColor;
+    // }
 
-    void OnMouseDown() {
-        Game.Instance.OnBlockMouseDown(gameObject);
-    }
+    // void OnMouseDown() {
+    //     Game.Instance.OnBlockMouseDown(gameObject);
+    // }
 }

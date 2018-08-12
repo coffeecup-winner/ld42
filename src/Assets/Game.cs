@@ -11,8 +11,7 @@ public class Game : MonoBehaviour {
 
     void Start() {
         Instance = this;
-        figures = new GameObject("Figures").transform;
-        figures.SetParent(transform);
+        figures = GameObject.Find("Figures").transform;
 
         var figure = Figure.GenerateRandomFigure(2, 2);
         figure.transform.SetParent(figures);
