@@ -28,14 +28,10 @@ public class Figure : MonoBehaviour {
         figureScript.BlocksCount = 1;
         figureScript.blocks = new int[w, h];
 
-        var pfBlock = Resources.Load<GameObject>("Prefabs/Block");
         // TODO: for now generate a 2x2 block
         int id = 1;
         for (int x = 0; x < 2; x++) {
             for (int y = 0; y < 2; y++) {
-                var block = Instantiate(pfBlock, new Vector3(x, y, 0.0f), Quaternion.identity);
-                block.transform.SetParent(figure.transform);
-
                 figureScript.blocks[x, y] = id++;
                 if (x > 0) {
                     int prevId = figureScript.blocks[x - 1, y];
@@ -48,6 +44,23 @@ public class Figure : MonoBehaviour {
                     if (prevId > 0) {
                         figureScript.links.Add(new Link(prevId, id - 1));
                     }
+                }
+            }
+        }
+
+        var pfBlock = Resources.Load<GameObject>("Prefabs/Block");
+        for (int x = 0; x < w; x++) {
+            for (int y = 0; y < h; y++) {
+                if (figureScript.blocks[x, y] > 0) {
+                    var block = Instantiate(pfBlock, new Vector3(x, y, 0.0f), Quaternion.identity);
+                    block.transform.SetParent(figure.transform);
+                    int hasLeft = x > 0 && figureScript.blocks[x - 1, y] > 0 ? 0 : 1;
+                    int hasTop = y < h - 1 && figureScript.blocks[x, y + 1] > 0 ? 0 : 1;
+                    int hasRight = x < w - 1 && figureScript.blocks[x + 1, y] > 0 ? 0 : 1;
+                    int hasBottom = y > 0 && figureScript.blocks[x, y - 1] > 0 ? 0 : 1;
+                    block.GetComponent<SpriteRenderer>().sprite =
+                        Resources.Load<Sprite>(string.Format("Textures/block_{0}{1}{2}{3}",
+                                                             hasLeft, hasTop, hasRight, hasBottom));
                 }
             }
         }
