@@ -6,18 +6,6 @@ using UnityEngine;
 
 public class Figure : MonoBehaviour {
 
-    private struct Link {
-        public Link(int v0, int v1) {
-            if (v0 >= v1) {
-                throw new Exception("ERROR: Invalid link");
-            }
-            V0 = v0;
-            V1 = v1;
-        }
-        public int V0;
-        public int V1;
-    }
-
     public static GameObject GenerateRandomFigure(int w, int h) {
         var figure = Instantiate(Resources.Load<GameObject>("Prefabs/Figure"));
         figure.name = String.Format("Figure {0}x{1}", w, h);
@@ -29,22 +17,25 @@ public class Figure : MonoBehaviour {
         figureScript.blocks = new int[w, h];
 
         // TODO: for now generate a 2x2 block
+        figureScript.links[0] = new HashSet<int>();
         int id = 1;
         for (int x = 0; x < 2; x++) {
             for (int y = 0; y < 2; y++) {
-                figureScript.blocks[x, y] = id++;
+                figureScript.blocks[x, y] = id;
+                figureScript.links[id] = new HashSet<int>();
                 if (x > 0) {
                     int prevId = figureScript.blocks[x - 1, y];
                     if (prevId > 0) {
-                        figureScript.links.Add(new Link(prevId, id - 1));
+                        figureScript.links[prevId].Add(id);
                     }
                 }
                 if (y > 0) {
                     int prevId = figureScript.blocks[x, y - 1];
                     if (prevId > 0) {
-                        figureScript.links.Add(new Link(prevId, id - 1));
+                        figureScript.links[prevId].Add(id);
                     }
                 }
+                ++id;
             }
         }
 
@@ -55,13 +46,8 @@ public class Figure : MonoBehaviour {
                     var block = Instantiate(pfBlock);
                     block.transform.SetParent(figure.transform);
                     block.transform.localPosition = new Vector3(x, y, 0.0f);
-                    int hasLeft = x > 0 && figureScript.blocks[x - 1, y] > 0 ? 0 : 1;
-                    int hasTop = y < h - 1 && figureScript.blocks[x, y + 1] > 0 ? 0 : 1;
-                    int hasRight = x < w - 1 && figureScript.blocks[x + 1, y] > 0 ? 0 : 1;
-                    int hasBottom = y > 0 && figureScript.blocks[x, y - 1] > 0 ? 0 : 1;
-                    block.GetComponent<SpriteRenderer>().sprite =
-                        Resources.Load<Sprite>(string.Format("Textures/block_{0}{1}{2}{3}",
-                                                             hasLeft, hasTop, hasRight, hasBottom));
+                    block.GetComponent<SpriteRenderer>().sprite = figureScript.GetSprite(x, y);
+                    figureScript.visualBlocks.Add(figureScript.blocks[x, y], block);
                 }
             }
         }
@@ -70,7 +56,8 @@ public class Figure : MonoBehaviour {
     }
 
     private int[,] blocks;
-    private List<Link> links = new List<Link>();
+    private Dictionary<int, HashSet<int>> links = new Dictionary<int, HashSet<int>>();
+    private Dictionary<int, GameObject> visualBlocks = new Dictionary<int, GameObject>();
 
     public int Width { get; private set; }
     public int Height { get; private set; }
@@ -80,9 +67,76 @@ public class Figure : MonoBehaviour {
         return blocks[x, y] > 0;
     }
 
+    public void Cut(int x0, int x1, int y) {
+        int v0 = blocks[x0, y];
+        int v1 = blocks[x1, y];
+
+        if (v0 > v1) {
+            int temp = v1;
+            v1 = v0;
+            v0 = temp;
+        }
+
+        if (!links[v0].Contains(v1)) {
+            Debug.Log(string.Format("({0},{1}) <-> ({2},{3}): no link to cut", x0, y, x1, y));
+            return;
+        }
+
+        links[v0].Remove(v1);
+
+        var stack = new Stack<int>();
+        var visited = new HashSet<int>();
+        stack.Push(v0);
+        visited.Add(v0);
+        while (stack.Count > 0) {
+            int id = stack.Pop();
+
+            foreach (int v in links[id]) {
+                if (visited.Add(v)) {
+                    stack.Push(v);
+                }
+            }
+        }
+
+        visualBlocks[v0].GetComponent<SpriteRenderer>().sprite = GetSprite(x0, y);
+        visualBlocks[v1].GetComponent<SpriteRenderer>().sprite = GetSprite(x1, y);
+
+        if (visited.Contains(v1)) {
+            Debug.Log(string.Format("({0},{1}) <-> ({2},{3}): cut the link", x0, y, x1, y));
+            return;
+        }
+
+        Debug.Log(string.Format("({0},{1}) <-> ({2},{3}): the figure is now split", x0, y, x1, y));
+        // TODO: add figure splitting
+    }
+
     void Start() {
     }
 
     void Update() {
+        if (Input.GetAxis("Vertical") < 0) {
+            Cut(0, 1, 0);
+        }
+        if (Input.GetAxis("Vertical") > 0) {
+            Cut(0, 1, 1);
+        }
+    }
+
+    // Visuals
+
+    Sprite GetSprite(int x, int y) {
+        int id = blocks[x, y];
+        int leftId = x > 0 ? blocks[x - 1, y] : 0;
+        int topId = y < Height - 1 ? blocks[x, y + 1] : 0;
+        int rightId = x < Width - 1 ? blocks[x + 1, y] : 0;
+        int bottomId = y > 0 ? blocks[x, y - 1] : 0;
+        int leftBorder = links[leftId].Contains(id) ? 0 : 1;
+        int topBorder = links[id].Contains(topId) ? 0 : 1;
+        int rightBorder = links[id].Contains(rightId) ? 0 : 1;
+        int bottomBorder = links[bottomId].Contains(id) ? 0 : 1;
+
+        string sprite = string.Format("Textures/block_{0}{1}{2}{3}", leftBorder, topBorder, rightBorder, bottomBorder);
+        Debug.Log(string.Format("[{0},{1}]: {2}", x, y, sprite));
+        return Resources.Load<Sprite>(sprite);
     }
 }
