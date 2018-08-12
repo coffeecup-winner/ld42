@@ -1,4 +1,4 @@
-﻿using System;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,9 +13,9 @@ public class Game : MonoBehaviour {
     public int levelPlayableHeight = 6;
     // total playable width = these four + 3 (1 for each color output)
     public int levelWidthBeforeGreen = 2;
-    public int levelWidthGreenToBlue = 3;
-    public int levelWidthBlueToRed = 3;
-    public int levelWidthAfterRed = 2;
+    public int levelWidthGreenToRed = 3;
+    public int levelWidthRedToBlue = 3;
+    public int levelWidthAfterBlue = 2;
     // top left corner
     public int levelHoleSize = 5;
 
@@ -24,7 +24,7 @@ public class Game : MonoBehaviour {
     public static int levelHeight { get; private set; }
 
     void Awake() {
-        levelWidth = 3 + levelWidthBeforeGreen + levelWidthGreenToBlue + levelWidthBlueToRed + levelWidthAfterRed;
+        levelWidth = 3 + levelWidthBeforeGreen + levelWidthGreenToRed + levelWidthRedToBlue + levelWidthAfterBlue;
         levelHeight = levelPlayableHeight;
     }
 
@@ -55,8 +55,8 @@ public class Game : MonoBehaviour {
         var pfWall = Resources.Load<GameObject>("Prefabs/Wall");
 
         int emptyX1 = levelWidthBeforeGreen;
-        int emptyX2 = emptyX1 + 1 + levelWidthGreenToBlue;
-        int emptyX3 = emptyX2 + 1 + levelWidthBlueToRed;
+        int emptyX2 = emptyX1 + 1 + levelWidthGreenToRed;
+        int emptyX3 = emptyX2 + 1 + levelWidthRedToBlue;
 
         var wallPositions = new List<Vector2>();
         for (int x = -1; x <= levelWidth; x += 1) {
