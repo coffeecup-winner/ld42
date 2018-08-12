@@ -52,7 +52,6 @@ public class UiStuff : MonoBehaviour
                     // snap to x, move along y
                     outputMove.x = snappiness * (Mathf.Round(currentPos.x) - currentPos.x);
                     outputMove.y = Mathf.Clamp(posToTarget.y, -1.0f, 1.0f);
-                    Debug.Log(string.Format("x snap gridToTarget=({0:0.00}, {1:0.00})", gridToTarget.x, gridToTarget.y));
                 }
                 else {
                     // move along x, snap to y
@@ -64,16 +63,15 @@ public class UiStuff : MonoBehaviour
                 // short drag: allow free movement within the vicinity of the nearest gridpoint
                 float d = 0.50f;  // [0, 1] default 0.5, higher is looser (how far away the circle is from the gridpoint)
                 float r = 0.45f;  // [0, 1] default 0.5, higher is tigher (circle radius)
-                var circleCenter = new Vector2(gridToTarget.x >= 0 ? d : (-d), gridToTarget.y >= 0 ? d : (-d));
+                Vector2 circleCenter = new Vector2(gridToTarget.x >= 0 ? d : (-d), gridToTarget.y >= 0 ? d : (-d));
                 float t = RaycastVectorCircle(gridToTarget, circleCenter, r);
-                outputMove = (snappedPos + t * gridToTarget) - currentPos;
-
-                // if (posToTarget.sqrMagnitude > 0.0001f) {
-                //     Debug.Log(string.Format(
-                //         "short pos=({0:0.00}, {1:0.00}) drag=({2:0.00}, {3:0.00}), gridToTarget=({4:0.00} {5:0.00}), out=({6:0.00} {7:0.00}), t={8:0.00}",
-                //         currentPos.x, currentPos.y, posToTarget.x, posToTarget.y, gridToTarget.x, gridToTarget.y, outputMove.x, outputMove.y, t
-                //     ));
-                // }
+                Vector2 gridToEdge = t * gridToTarget;
+                Vector2 onEdge = snappedPos + gridToEdge;
+                Vector2 edgeToCircle = circleCenter - onEdge;
+                Vector2 edgeToTarget = (1 - t) * gridToTarget;
+                Vector2 intoTheCircle = edgeToTarget * Vector2.Dot(edgeToTarget, edgeToCircle.normalized);
+                Vector2 alongTheCircle = edgeToTarget - intoTheCircle;
+                outputMove = (snappedPos + gridToEdge + 0.2f * alongTheCircle) - currentPos;
             }
 
             // move the figure, not the block
