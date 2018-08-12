@@ -97,8 +97,46 @@ public class Figure : MonoBehaviour, IMovable {
         }
     }
 
-    public void Rotate3x3(float rotatorAreaMinX, float rotatorAreaMinY) {
-        // TODO
+    public void Rotate3x3(Vector2 rotatorAreaBottomLeft, bool rotateCW) {
+        const int RotatorSize = 3;
+
+        var rotatedBlocks = new int[Height, Width];
+        for (int x = 0; x < Width; x++) {
+            for (int y = 0; y < Height; y++) {
+                if (rotateCW) {
+                    rotatedBlocks[y, Width - x - 1] = blocks[x, y];
+                } else {
+                    rotatedBlocks[Height - y - 1, x] = blocks[x, y];
+                }
+            }
+        }
+        int oldWidth = Width;
+        int oldHeight = Height;
+
+        Width = oldHeight;
+        Height = oldWidth;
+        blocks = rotatedBlocks;
+
+        for (int x = 0; x < Width; x++) {
+            for (int y = 0; y < Height; y++) {
+                int id = blocks[x, y];
+                if (id > 0) {
+                    visualBlocks[id].transform.localPosition = new Vector2(x, y);
+                    visualBlocks[id].GetComponent<SpriteRenderer>().sprite = GetSprite(x, y);
+                }
+            }
+        }
+
+        Vector2 oldBottomLeft = (Vector2)transform.localPosition - rotatorAreaBottomLeft;
+        Vector2 newBottomLeft;
+        if (rotateCW) {
+            var bottomRight = oldBottomLeft + new Vector2(Height - 1, 0);
+            newBottomLeft = new Vector2(bottomRight.y, RotatorSize - bottomRight.x - 1);
+        } else {
+            var topLeft = oldBottomLeft + new Vector2(0, Width - 1);
+            newBottomLeft = new Vector2(RotatorSize - topLeft.y - 1, topLeft.x);
+        }
+        transform.localPosition = rotatorAreaBottomLeft + newBottomLeft;
     }
 
     void Cut(int x0, int x1, int y) {
@@ -265,12 +303,5 @@ public class Figure : MonoBehaviour, IMovable {
         top = positions.Select(p => p += new Vector2(0, 1)).All(isAllowed);
         right = positions.Select(p => p += new Vector2(1, 0)).All(isAllowed);
         bottom = positions.Select(p => p += new Vector2(0, -1)).All(isAllowed);
-    }
-
-    void Update() {
-        bool left, top, right, bottom;
-
-        GetAllowedMoves(out left, out top, out right, out bottom);
-        Debug.Log(string.Format("Allowed moves: {0}, {1}, {2}, {3}", left, top, right, bottom));
     }
 }

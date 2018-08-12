@@ -39,8 +39,9 @@ public class Rotator : MonoBehaviour, IMovable {
             return;
         }
 
+        var rotatorAreaBottomLeft = (Vector2)transform.position + new Vector2(0, 1.0f);
         foreach (var group in groups) {
-            group.Key.GetComponent<Figure>().Rotate3x3(transform.position.x, transform.position.y + 1.0f);
+            group.Key.GetComponent<Figure>().Rotate3x3(rotatorAreaBottomLeft, rotateCW);
         }
     }
 
