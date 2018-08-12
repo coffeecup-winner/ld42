@@ -14,7 +14,7 @@ public class Game : MonoBehaviour {
         figures = new GameObject("Figures").transform;
         figures.SetParent(transform);
 
-        var figure = Figure.GenerateRandomFigure(1, 1);
+        var figure = Figure.GenerateRandomFigure(2, 2);
         figure.transform.SetParent(figures);
     }
 
