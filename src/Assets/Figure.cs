@@ -7,11 +7,12 @@ using UnityEngine;
 public class Figure : MonoBehaviour {
     private static int IdGen = 0;
 
-    public static GameObject GenerateRandomFigure(int w, int h) {
+    public static GameObject GenerateRandomFigure(int w, int h, BlockType type) {
         var figure = Instantiate(Resources.Load<GameObject>("Prefabs/Figure"));
 
         var figureScript = figure.GetComponent<Figure>();
         figureScript.id = IdGen++;
+        figureScript.Type = type;
         figureScript.Width = w;
         figureScript.Height = h;
         figureScript.blocks = new int[w, h];
@@ -50,9 +51,14 @@ public class Figure : MonoBehaviour {
             for (int y = 0; y < h; y++) {
                 if (figureScript.blocks[x, y] > 0) {
                     var block = Instantiate(pfBlock);
+                    block.name = string.Format("Block " + figureScript.blocks[x, y]);
                     block.transform.SetParent(figure.transform);
                     block.transform.localPosition = new Vector3(x, y, 0.0f);
-                    block.GetComponent<SpriteRenderer>().sprite = figureScript.GetSprite(x, y);
+                    var renderer = block.GetComponent<SpriteRenderer>();
+                    renderer.sprite = figureScript.GetSprite(x, y);
+                    renderer.color = type == BlockType.Green ? Game.Instance.green
+                                   : type == BlockType.Blue ? Game.Instance.blue
+                                   : Game.Instance.red;
                     figureScript.visualBlocks.Add(figureScript.blocks[x, y], block);
                 }
             }
@@ -66,6 +72,7 @@ public class Figure : MonoBehaviour {
     private Dictionary<int, HashSet<int>> links = new Dictionary<int, HashSet<int>>();
     private Dictionary<int, GameObject> visualBlocks = new Dictionary<int, GameObject>();
 
+    public BlockType Type { get; private set; }
     public int Width { get; private set; }
     public int Height { get; private set; }
 
@@ -201,6 +208,7 @@ public class Figure : MonoBehaviour {
 
         var cloneScript = clone.GetComponent<Figure>();
         cloneScript.id = IdGen++;
+        cloneScript.Type = Type;
         cloneScript.Width = Width;
         cloneScript.Height = Height;
         cloneScript.blocks = new int[Width, Height];

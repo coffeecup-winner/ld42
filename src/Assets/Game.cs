@@ -4,6 +4,12 @@ using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
 
+public enum BlockType {
+    Green,
+    Blue,
+    Red,
+}
+
 public class Game : MonoBehaviour {
     public static Game Instance { get; private set; }
 
@@ -19,6 +25,11 @@ public class Game : MonoBehaviour {
     // top left corner
     public int levelHoleSize = 5;
 
+    // Colors
+    public Color green;
+    public Color blue;
+    public Color red;
+
     // only valid after Awake()
     public static int levelWidth { get; private set; }
     public static int levelHeight { get; private set; }
@@ -32,7 +43,7 @@ public class Game : MonoBehaviour {
         Instance = this;
         figures = GameObject.Find("Figures").transform;
 
-        var figure = Figure.GenerateRandomFigure(2, 2);
+        var figure = Figure.GenerateRandomFigure(2, 2, BlockType.Green);
         figure.transform.SetParent(figures);
         figure.transform.localPosition = Vector3.zero;
 
