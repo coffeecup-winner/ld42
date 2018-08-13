@@ -110,13 +110,13 @@ public class Game : MonoBehaviour {
         if (type == BlockType.Green)
             return 0;
         if (type == BlockType.Blue)
-            return 1;
+            return sawCostUpgraded ? 0 : 1;
         if (type == BlockType.Red)
-            return 2;
+            return sawCostUpgraded ? 1 : 2;
         return 0;
     }
 
-    public static int rotationCost { get; private set; }
+    public static int rotationCost { get; set; }
     public static int transmutationCost { get; private set; }
 
     public static bool sawCostUpgraded { get; set; }

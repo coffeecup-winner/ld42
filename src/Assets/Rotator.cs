@@ -13,7 +13,7 @@ public class Rotator : MonoBehaviour, IMovable {
         activeArea3x3.SetActive(false);
     }
 
-    public void Upgrade() {
+    public void UpgradeSize() {
         if (areaSize == 2) {
             areaSize = 3;
             activeArea3x3.SetActive(true);

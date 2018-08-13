@@ -545,7 +545,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   m_Material: {fileID: 0}
-  m_Color: {r: 0.6254902, g: 1, b: 0.5, a: 1}
+  m_Color: {r: 0.4389763, g: 1, b: 0.25, a: 1}
   m_RaycastTarget: 1
   m_OnCullStateChanged:
     m_PersistentCalls:
@@ -1792,9 +1792,7 @@ MonoBehaviour:
     m_HorizontalOverflow: 0
     m_VerticalOverflow: 0
     m_LineSpacing: 1
-  m_Text: 'saw for free
-
-'
+  m_Text: lower cutting costs
 --- !u!222 &1308185282
 CanvasRenderer:
   m_ObjectHideFlags: 0

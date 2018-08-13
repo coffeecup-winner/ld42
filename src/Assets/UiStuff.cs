@@ -251,10 +251,11 @@ public class UiStuff : MonoBehaviour
         }
         else if (what == "rotatorCost") {
             Game.rotatorCostUpgraded = true;
+            Game.rotationCost = 0;
         }
         else if (what == "rotatorSize") {
             Game.rotatorSize = 3;
-            GameObject.Find("Rotator").GetComponent<Rotator>().Upgrade();
+            GameObject.Find("Rotator").GetComponent<Rotator>().UpgradeSize();
         }
         else if (what == "transmuter1") {
             Game.transmuterSize = 1;
