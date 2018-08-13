@@ -35,10 +35,26 @@ public class UiStuff : MonoBehaviour
         }
 
         if (draggedBlock) {
+            Vector2 targetPos = (Vector2)mouseWorld;
             Vector2 currentPos = (Vector2)draggedBlock.position;
             Vector2 snappedPos = new Vector2(Mathf.Round(currentPos.x), Mathf.Round(currentPos.y));
-            Vector2 posToTarget = (Vector2)mouseWorld - currentPos;
-            Vector2 gridToTarget = (Vector2)mouseWorld - snappedPos;
+
+            var figure = draggedBlock.parent.GetComponent<Figure>();
+            if (figure) {
+                bool left, top, right, bottom;
+                figure.GetAllowedMoves(out left, out top, out right, out bottom);
+                if (!left)
+                    targetPos.x = Mathf.Max(snappedPos.x /*- 0.5f*/, targetPos.x);
+                if (!right)
+                    targetPos.x = Mathf.Min(snappedPos.x /*+ 0.5f*/, targetPos.x);
+                if (!bottom)
+                    targetPos.y = Mathf.Max(snappedPos.y /*- 0.5f*/, targetPos.y);
+                if (!top)
+                    targetPos.y = Mathf.Min(snappedPos.y /*+ 0.5f*/, targetPos.y);
+            }
+
+            Vector2 posToTarget = targetPos - currentPos;
+            Vector2 gridToTarget = targetPos - snappedPos;
             Vector2 absDelta = new Vector2(Mathf.Abs(gridToTarget.x), Mathf.Abs(gridToTarget.y));
             Vector3 outputMove = Vector3.zero;
 
@@ -51,11 +67,11 @@ public class UiStuff : MonoBehaviour
                 if (absDelta.y >= absDelta.x) {
                     // snap to x, move along y
                     outputMove.x = snappiness * (Mathf.Round(currentPos.x) - currentPos.x);
-                    outputMove.y = Mathf.Clamp(posToTarget.y, -1.0f, 1.0f);
+                    outputMove.y = posToTarget.y;
                 }
                 else {
                     // move along x, snap to y
-                    outputMove.x = Mathf.Clamp(posToTarget.x, -1.0f, 1.0f);
+                    outputMove.x = posToTarget.x;
                     outputMove.y = snappiness * (Mathf.Round(currentPos.y) - currentPos.y);
                 }
             }
@@ -75,8 +91,9 @@ public class UiStuff : MonoBehaviour
             }
 
             // move the figure, not the block
+            outputMove.x = Mathf.Clamp(outputMove.x, -0.5f, 0.5f);
+            outputMove.y = Mathf.Clamp(outputMove.y, -0.5f, 0.5f);
             draggedBlock.parent.position += outputMove;
-            // Debug.Log(string.Format("pos = ({0:0.00}, {1:0.00})", draggedBlock.parent.position.x, draggedBlock.parent.position.y));
             return;
         }
 
