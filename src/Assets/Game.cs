@@ -103,10 +103,14 @@ public class Game : MonoBehaviour {
         return 0;
     }
 
+    public static int rotationCost { get; private set; }
+
     void Awake() {
         Instance = this;
         levelWidth = 3 + levelWidthBeforeGreen + levelWidthGreenToRed + levelWidthRedToBlue + levelWidthAfterBlue;
         levelHeight = levelPlayableHeight;
+
+        rotationCost = 1;
         maxFuel = 100;
         fuel = 10;
         maxResearch = 10;

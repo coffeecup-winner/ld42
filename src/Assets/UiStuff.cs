@@ -9,6 +9,7 @@ public class UiStuff : MonoBehaviour
 
     RectTransform fuelCanvas;
     RectTransform fuelBar;
+    Image fuelFlash;
     Text fuelText;
 
     RectTransform researchCanvas;
@@ -24,6 +25,7 @@ public class UiStuff : MonoBehaviour
         fuelCanvas = GameObject.Find("FuelCanvas").GetComponent<RectTransform>();
         fuelText = GameObject.Find("FuelText").GetComponent<Text>();
         fuelBar = GameObject.Find("FuelBar").GetComponent<RectTransform>();
+        fuelFlash = GameObject.Find("FuelFlash").GetComponent<Image>();
 
         researchCanvas = GameObject.Find("ResearchCanvas").GetComponent<RectTransform>();
         researchText = GameObject.Find("ResearchText").GetComponent<Text>();
@@ -35,9 +37,9 @@ public class UiStuff : MonoBehaviour
         fuelCanvas.localPosition = new Vector2(fuelWidth * 0.5f, -2.0f);
         fuelCanvas.sizeDelta = new Vector2(fuelWidth * 100, 100);
 
-        int researchWidth = Game.Instance.levelWidthAfterBlue + 2;
-        researchCanvas.localPosition = new Vector2(fuelWidth + researchWidth * 0.5f, -2.0f);
-        fuelCanvas.sizeDelta = new Vector2(researchWidth * 100, 100);
+        int researchWidth = Game.Instance.levelWidthAfterBlue + 1;
+        researchCanvas.localPosition = new Vector2(fuelWidth + 1 + researchWidth * 0.5f, -2.0f);
+        researchCanvas.sizeDelta = new Vector2(researchWidth * 100, 100);
 
         setFuel(Game.fuel);
         setResearch(Game.research);
@@ -50,8 +52,6 @@ public class UiStuff : MonoBehaviour
     void UpdateDragging() {
         Vector3 mouseWorld = Camera.main.ScreenToWorldPoint(Input.mousePosition);
         mouseWorld.z = 0;
-
-        if (draggedBlock)
 
         // true for one frame only
         if (Input.GetMouseButtonUp(0)) {
@@ -186,5 +186,27 @@ public class UiStuff : MonoBehaviour
             size.x = size.x * (value / (float)Game.maxResearch);
             self.researchBar.sizeDelta = size;
         }
+    }
+
+    private Coroutine runningOutOfFuel;
+
+    public void flashOutOfFuel() {
+        if (runningOutOfFuel != null)
+            StopCoroutine(runningOutOfFuel);
+        runningOutOfFuel = StartCoroutine(animateOutOfFuel());
+    }
+
+    IEnumerator animateOutOfFuel() {
+        bool enabled = true;
+
+        for (int i = 0; i < 6; ++i) {
+            fuelFlash.enabled = enabled;
+            enabled = !enabled;
+
+            float next = Time.time + 0.3f;
+            while (Time.time < next)
+                yield return null;
+        }
+        fuelFlash.enabled = false;
     }
 }

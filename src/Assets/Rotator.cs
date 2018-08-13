@@ -22,6 +22,12 @@ public class Rotator : MonoBehaviour, IMovable {
             return;
         }
 
+        if (Game.fuel < Game.rotationCost) {
+            UiStuff.Instance.flashOutOfFuel();
+            return;
+        }
+        Game.fuel -= Game.rotationCost;
+
         Debug.Log("Rotate " + (rotateCW ? "CW" : "CCW"));
 
         var groups = GameObject

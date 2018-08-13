@@ -31,6 +31,9 @@ public class Saw : MonoBehaviour, IMovable {
                 Game.fuel -= cost;
             }
         }
+        else {
+            UiStuff.Instance.flashOutOfFuel();
+        }
     }
 
     public IEnumerable<Vector2> EnumerateAllFilledBlocks() {
