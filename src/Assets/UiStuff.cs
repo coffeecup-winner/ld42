@@ -11,21 +11,36 @@ public class UiStuff : MonoBehaviour
     RectTransform fuelBar;
     Text fuelText;
 
+    RectTransform researchCanvas;
+    RectTransform researchBar;
+    Text researchText;
+
     Transform draggedBlock;
 
     void Awake() {
         Instance = this;
+        draggedBlock = null;
+
         fuelCanvas = GameObject.Find("FuelCanvas").GetComponent<RectTransform>();
         fuelText = GameObject.Find("FuelText").GetComponent<Text>();
         fuelBar = GameObject.Find("FuelBar").GetComponent<RectTransform>();
-        draggedBlock = null;
+
+        researchCanvas = GameObject.Find("ResearchCanvas").GetComponent<RectTransform>();
+        researchText = GameObject.Find("ResearchText").GetComponent<Text>();
+        researchBar = GameObject.Find("ResearchBar").GetComponent<RectTransform>();
     }
 
     void Start() {
         int fuelWidth = Game.levelWidth - Game.Instance.levelWidthAfterBlue - 2;
         fuelCanvas.localPosition = new Vector2(fuelWidth * 0.5f, -2.0f);
         fuelCanvas.sizeDelta = new Vector2(fuelWidth * 100, 100);
+
+        int researchWidth = Game.Instance.levelWidthAfterBlue + 2;
+        researchCanvas.localPosition = new Vector2(fuelWidth + researchWidth * 0.5f, -2.0f);
+        fuelCanvas.sizeDelta = new Vector2(researchWidth * 100, 100);
+
         setFuel(Game.fuel);
+        setResearch(Game.research);
     }
     
     void Update() {
@@ -157,6 +172,19 @@ public class UiStuff : MonoBehaviour
             Vector2 size = self.fuelCanvas.sizeDelta;
             size.x = size.x * (value / (float)Game.maxFuel);
             self.fuelBar.sizeDelta = size;
+        }
+    }
+
+    public static void setResearch(int value) {
+        var self = Instance;
+
+        if (self && self.researchText)
+            self.researchText.text = string.Format("{0}/{1}", value, Game.maxResearch);
+
+        if (self && self.researchBar && self.researchCanvas) {
+            Vector2 size = self.researchCanvas.sizeDelta;
+            size.x = size.x * (value / (float)Game.maxResearch);
+            self.researchBar.sizeDelta = size;
         }
     }
 }

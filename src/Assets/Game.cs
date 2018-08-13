@@ -58,7 +58,23 @@ public class Game : MonoBehaviour {
             fuelField = ok;
         }
     }
-    public static int research { get; set; }
+
+    public static int maxResearch { get; private set; }
+    private static int researchField;
+    public static int research {
+        get {
+            return researchField;
+        }
+        set {
+            int ok = value;
+            if (ok < 0)
+                ok = 0;
+            if (ok > maxResearch)
+                ok = maxResearch;
+            UiStuff.setResearch(ok);
+            researchField = ok;
+        }
+    }
 
     public static Color TypeToColor(BlockType type) {
         return type == BlockType.Green ? Game.Instance.green
@@ -82,6 +98,8 @@ public class Game : MonoBehaviour {
         levelHeight = levelPlayableHeight;
         maxFuel = 100;
         fuel = 10;
+        maxResearch = 10;
+        research = 0;
     }
 
     void Start() {
@@ -100,6 +118,7 @@ public class Game : MonoBehaviour {
     }
 
     void Update() {
+        research = (int)(Time.time - 2);
     }
 
     public void OnBlockMouseDown(GameObject block) {
