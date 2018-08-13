@@ -91,12 +91,6 @@ public class Game : MonoBehaviour {
     }
 
     void Update() {
-        if (Time.time < 10) {
-            fuel = (int)(maxFuel + 2 - Time.time);
-        }
-        else {
-            fuel = (int)(Time.time - 11);
-        }
     }
 
     public void OnBlockMouseDown(GameObject block) {
@@ -209,7 +203,19 @@ public class Game : MonoBehaviour {
     }
 
     public bool TryOutput(BlockType type) {
-        // TODO
-        return true;
+        switch (type) {
+            case BlockType.Green:
+                fuel += 1;
+                return true;
+            case BlockType.Blue:
+                return true;
+            case BlockType.Red:
+                if (fuel == 0) {
+                    return false;
+                }
+                fuel -= 1;
+                return true;
+            default: throw new InvalidOperationException();
+        }
     }
 }

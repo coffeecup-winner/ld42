@@ -82,7 +82,7 @@ public class Figure : MonoBehaviour, IMovable {
         return blocks[x, y] > 0;
     }
 
-    public void CutRightOf(GameObject blockLeft) {
+    public bool CutRightOf(GameObject blockLeft) {
         // TODO: Create a block => id map if slow
         for (int id = 1; id <= maxId; id++) {
             if (visualBlocks.ContainsKey(id)) {
@@ -91,14 +91,14 @@ public class Figure : MonoBehaviour, IMovable {
                     for (int x = 0; x < Width; x++) {
                         for (int y = 0; y < Height; y++) {
                             if (blocks[x, y] == id) {
-                                Cut(x, x + 1, y);
-                                return;
+                                return Cut(x, x + 1, y);
                             }
                         }
                     }
                 }
             }
         }
+        return false;
     }
 
     public void Rotate3x3(Vector2 rotatorAreaBottomLeft, bool rotateCW) {
@@ -143,12 +143,12 @@ public class Figure : MonoBehaviour, IMovable {
         transform.localPosition = rotatorAreaBottomLeft + newBottomLeft;
     }
 
-    void Cut(int x0, int x1, int y) {
+    bool Cut(int x0, int x1, int y) {
         int v0 = blocks[x0, y];
         int v1 = blocks[x1, y];
 
         if (!links[v0].Contains(v1)) {
-            return;
+            return false;
         }
 
         links[v0].Remove(v1);
@@ -173,7 +173,7 @@ public class Figure : MonoBehaviour, IMovable {
 
         if (visited.Contains(v1)) {
             Debug.Log(string.Format("({0},{1}) <-> ({2},{3}): cut the link", x0, y, x1, y));
-            return;
+            return true;
         }
 
         Debug.Log(string.Format("({0},{1}) <-> ({2},{3}): the figure is now split", x0, y, x1, y));
@@ -196,6 +196,8 @@ public class Figure : MonoBehaviour, IMovable {
         SplitTo(visited);
         newFigure.GetComponent<Figure>().SplitTo(figure2ids);
         newFigure.transform.SetParent(transform.parent);
+
+        return true;
     }
 
     // This method assumes the parameter is a separate graph component

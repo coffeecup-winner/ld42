@@ -22,7 +22,11 @@ public class Saw : MonoBehaviour, IMovable {
             return;
         }
 
-        blockRight.transform.parent.GetComponent<Figure>().CutRightOf(blockLeft);
+        if (Game.fuel > 0) {
+            if (blockRight.transform.parent.GetComponent<Figure>().CutRightOf(blockLeft)) {
+                Game.fuel -= 1;
+            }
+        }
     }
 
     public IEnumerable<Vector2> EnumerateAllFilledBlocks() {
