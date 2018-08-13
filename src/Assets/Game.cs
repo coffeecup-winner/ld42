@@ -60,11 +60,20 @@ public class Game : MonoBehaviour {
     }
     public static int research { get; set; }
 
-
     public static Color TypeToColor(BlockType type) {
         return type == BlockType.Green ? Game.Instance.green
             : type == BlockType.Blue ? Game.Instance.blue
             : Game.Instance.red;
+    }
+
+    public static int cuttingCost(BlockType type) {
+        if (type == BlockType.Green)
+            return 0;
+        if (type == BlockType.Blue)
+            return 1;
+        if (type == BlockType.Red)
+            return 2;
+        return 0;
     }
 
     void Awake() {

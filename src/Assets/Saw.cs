@@ -22,9 +22,11 @@ public class Saw : MonoBehaviour, IMovable {
             return;
         }
 
-        if (Game.fuel > 0) {
-            if (blockRight.transform.parent.GetComponent<Figure>().CutRightOf(blockLeft)) {
-                Game.fuel -= 1;
+        var figure = blockRight.transform.parent.GetComponent<Figure>();
+        int cost = Game.cuttingCost(figure.Type);
+        if (Game.fuel >= cost) {
+            if (figure.CutRightOf(blockLeft)) {
+                Game.fuel -= cost;
             }
         }
     }
