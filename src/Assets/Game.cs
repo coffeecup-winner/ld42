@@ -364,17 +364,17 @@ public class Game : MonoBehaviour {
         var saw = Instantiate(pfSaw);
         saw.name = "Saw";
         saw.transform.SetParent(tools);
-        saw.transform.localPosition = new Vector3(5.0f, 1.0f, 0.0f);
+        saw.transform.localPosition = new Vector3(6.0f, 0.0f, 0.0f);
 
         var rotator = Instantiate(pfRotator);
         rotator.name = "Rotator";
         rotator.transform.SetParent(tools);
-        rotator.transform.localPosition = new Vector3(10.0f, 1.0f, 0.0f);
+        rotator.transform.localPosition = new Vector3(11.0f, 0.0f, 0.0f);
 
         var transmuter = Instantiate(pfTransmuter);
         transmuter.name = "Transmuter";
         transmuter.transform.SetParent(tools);
-        transmuter.transform.localPosition = new Vector3(16.0f, 1.0f, 0.0f);
+        transmuter.transform.localPosition = new Vector3(16.0f, 0.0f, 0.0f);
 
         var tutArrow = Instantiate(pfTutorialArrow);
         tutArrow.name = "TutorialArrow";
