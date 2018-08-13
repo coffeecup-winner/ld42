@@ -163,4 +163,9 @@ public class Game : MonoBehaviour {
         return (y == -1 && (x == output1 || x == output2 || x == output3)) ||
             (x >= 0 && x < levelWidth && y >= 0 && y < levelHeight && !collisionField[x, y]);
     }
+
+    public bool TryOutput(BlockType type) {
+        // TODO
+        return true;
+    }
 }
