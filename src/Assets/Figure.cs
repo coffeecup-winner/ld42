@@ -40,7 +40,8 @@ public class Figure : MonoBehaviour, IMovable {
                 ++id;
             }
         }
-        for (id = 1; id <= w * h; id++) {
+        figureScript.maxId = id - 1;
+        for (id = 1; id <= figureScript.maxId; id++) {
             foreach (int v in figureScript.links[id]) {
                 figureScript.links[v].Add(id);
             }
@@ -66,6 +67,7 @@ public class Figure : MonoBehaviour, IMovable {
     }
 
     private int id;
+    private int maxId; // TODO: rewrite ID usage to not need this
     private int[,] blocks;
     private Dictionary<int, HashSet<int>> links = new Dictionary<int, HashSet<int>>();
     private Dictionary<int, GameObject> visualBlocks = new Dictionary<int, GameObject>();
@@ -79,8 +81,9 @@ public class Figure : MonoBehaviour, IMovable {
     }
 
     public void CutRightOf(GameObject blockLeft) {
+        Debug.Log(blockLeft.ToString());
         // TODO: Create a block => id map if slow
-        for (int id = 0; id <= Width * Height; id++) {
+        for (int id = 1; id <= maxId; id++) {
             if (visualBlocks.ContainsKey(id)) {
                 if (visualBlocks[id] == blockLeft) {
                     // TODO: Create an id => (x, y) map if slow
@@ -229,7 +232,7 @@ public class Figure : MonoBehaviour, IMovable {
         blocks = newBlocks;
 
         transform.position += new Vector3(minX, minY, 0.0f);
-        for (int id = 1; id <= oldWidth * oldHeight; id++) {
+        for (int id = 1; id <= maxId; id++) {
             if (ids.Contains(id)) {
                 Debug.Log(string.Format("Figure #{0}: taking ownership of block {1}", this.id, id));
                 visualBlocks[id].transform.SetParent(transform);
@@ -246,6 +249,7 @@ public class Figure : MonoBehaviour, IMovable {
 
         var cloneScript = clone.GetComponent<Figure>();
         cloneScript.id = IdGen++;
+        cloneScript.maxId = maxId;
         cloneScript.Type = Type;
         cloneScript.Width = Width;
         cloneScript.Height = Height;
