@@ -225,20 +225,27 @@ public class Figure : MonoBehaviour, IMovable {
         var newBlocks = new int[Width, Height];
         for (int x = minX; x <= maxX; x++) {
             for (int y = minY; y <= maxY; y++) {
-                if (ids.Contains(blocks[x, y])) {
+                int id = blocks[x, y];
+                if (ids.Contains(id)) {
                     newBlocks[x - minX, y - minY] = blocks[x, y];
+                    visualBlocks[id].transform.SetParent(transform);
+                } else {
+                    if (id > 0) {
+                        links.Remove(id);
+                    }
+                    visualBlocks.Remove(id);
                 }
             }
         }
         blocks = newBlocks;
 
         transform.position += new Vector3(minX, minY, 0.0f);
-        for (int id = 1; id <= maxId; id++) {
-            if (ids.Contains(id)) {
-                visualBlocks[id].transform.SetParent(transform);
-            } else {
-                links.Remove(id);
-                visualBlocks.Remove(id);
+        for (int x = 0; x < Width; x++) {
+            for (int y = 0; y < Height; y++) {
+                int id = blocks[x, y];
+                if (id > 0) {
+                    visualBlocks[id].transform.localPosition = (Vector3)new Vector2(x, y);
+                }
             }
         }
     }
