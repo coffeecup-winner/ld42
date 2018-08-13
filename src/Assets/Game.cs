@@ -53,7 +53,6 @@ public class Game : MonoBehaviour {
     public static int levelHeight { get; private set; }
 
     // figures pipe
-    public int TotalNumberOfFigures;
     private static readonly List<Vector2> visiblePipePositions = new List<Vector2>();
     private static readonly Queue<GameObject> visibleFigures = new Queue<GameObject>();
     private static readonly Queue<GameObject> allFigures = new Queue<GameObject>();
@@ -138,8 +137,12 @@ public class Game : MonoBehaviour {
 
         generateLevel();
 
-        for (int i = 0; i < TotalNumberOfFigures; i++) {
-            allFigures.Enqueue(Figure.Create(FigureFactory.GetTemplate(), BlockType.Red));
+        for (int i = 0; i < FigureFactory.TemplatesCount; i++) {
+            var blockType = BlockType.Green;
+            if (i % 2 == 1) {
+                blockType = i % 4 == 1 ? BlockType.Blue : BlockType.Red;
+            }
+            allFigures.Enqueue(Figure.Create(FigureFactory.GetTemplate(i), blockType));
         }
         for (int i = 0; i < visiblePipePositions.Count; i++) {
             var figure = allFigures.Dequeue();
@@ -170,6 +173,8 @@ public class Game : MonoBehaviour {
                 newFigure.transform.SetParent(figures);
                 newFigure.transform.localPosition = visiblePipePositions.Last();
                 visibleFigures.Enqueue(newFigure);
+            } else {
+                // TODO: PUT YOU WIN MESSAGE HERE
             }
         }
 

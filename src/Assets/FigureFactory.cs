@@ -10,24 +10,74 @@ public static class FigureFactory {
         x
         -----
         x
-        x
         -----
         xx
         -----
         x
-        xx
         -----
-        xx
-         x
+        xxx
+        x x
+        xxx
         -----
-        xx
+        xxxxx
+        x   x
+        xxxxx
+            x
+        xxxxx
+        -----
+        xxxxx
+        x   x
+        xxxxx
+        x   x
+        xxxxx
+        -----
+        xxxxx
+            x
+            x
+            x
+            x
+        -----
+        xxxxx
         x
+        xxxxx
+        x   x
+        xxxxx
         -----
-         x
-        xx
+        xxxxx
+        x
+        xxxxx
+            x
+        xxxxx
         -----
-        xx
-        xx
+        x   x
+        x   x
+        xxxxx
+            x
+            x
+        -----
+        xxxxx
+            x
+        xxxxx
+            x
+        xxxxx
+        -----
+        xxxxx
+            x
+        xxxxx
+        x
+        xxxxx
+        -----
+            x
+          xxx
+            x
+            x
+            x
+        -----
+        xxxxx
+        x x x
+        xx xx
+        x x x
+        xxxxx
         -----";
 
     private static readonly List<bool[,]> templates = new List<bool[,]>();
@@ -61,7 +111,9 @@ public static class FigureFactory {
         }
     }
 
-    public static bool[,] GetTemplate() {
-        return templates[(int)Math.Round(Random.value * (templates.Count - 1))];
+    public static int TemplatesCount { get { return templates.Count; } }
+
+    public static bool[,] GetTemplate(int i) {
+        return templates[i];
     }
 }
