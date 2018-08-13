@@ -5,38 +5,39 @@ using System.Linq;
 using UnityEngine;
 
 public class Transmuter : MonoBehaviour, IMovable {
-    private int areaSize = 1;
+    private int areaSize = 0;
 
-    void Upgrade() {
-        // TODO: make checks against research
+    private GameObject activeArea1x1;
+    private GameObject activeArea2x2;
+    private GameObject activeArea3x3;
 
-        if (areaSize < 3) {
-            areaSize++;
-        } else {
-            Debug.Log("Nothing to upgrade");
-            return;
-        }
+    void Start() {
+        activeArea1x1 = transform.Find("Active Area (size = 1)").gameObject;
+        activeArea2x2 = transform.Find("Active Area (size = 2)").gameObject;
+        activeArea3x3 = transform.Find("Active Area (size = 3)").gameObject;
+        activeArea1x1.SetActive(false);
+        activeArea2x2.SetActive(false);
+        activeArea3x3.SetActive(false);
+    }
 
-        // Hard-coded against prefab
-        var activeColor = transform.GetChild(3).GetChild(0).GetComponent<SpriteRenderer>().color;
-        var nextSizeChildren = transform.GetChild(areaSize == 2 ? 4 : 5);
-        for (int i = 0; i < nextSizeChildren.childCount; i++) {
-            nextSizeChildren.GetChild(i).GetComponent<SpriteRenderer>().color = activeColor;
-        }
-        if (areaSize == 3) {
-            transform.GetChild(2).GetComponent<SpriteRenderer>().enabled = false;
-        }
+    public void UpgradeSize(int newSize) {
+        areaSize = newSize;
+        if (areaSize >= 1)
+            activeArea1x1.SetActive(true);
+        if (areaSize >= 2)
+            activeArea2x2.SetActive(true);
+        if (areaSize >= 3)
+            activeArea3x3.SetActive(true);
     }
 
     void OnMouseDown() {
+        if (areaSize < 1)
+            return;
         var clickPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
 
         if (Math.Abs(clickPos.y - transform.position.y) <= 0.5f) {
             if (Math.Abs(clickPos.x - (transform.position.x + 1)) <= 0.5f) {
                 // continue
-            } else if (Math.Abs(clickPos.x - (transform.position.x + 2)) <= 0.5f) {
-                Upgrade();
-                return;
             } else {
                 return;
             }
