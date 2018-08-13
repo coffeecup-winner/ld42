@@ -143,6 +143,9 @@ public class Game : MonoBehaviour {
         var level = GameObject.Find("Level").transform;
         var tools = GameObject.Find("Tools").transform;
         var pfWall = Resources.Load<GameObject>("Prefabs/Wall");
+        var pfPipeEnd = Resources.Load<GameObject>("Prefabs/PipeEnd");
+        var pfPipe = Resources.Load<GameObject>("Prefabs/Pipe");
+        var pfInputArea = Resources.Load<GameObject>("Prefabs/InputArea");
         var pfDownArrow = Resources.Load<GameObject>("Prefabs/DownArrow");
         var pfFloor = Resources.Load<GameObject>("Prefabs/Floor");
         var pfOutput = Resources.Load<GameObject>("Prefabs/Output");
@@ -189,6 +192,28 @@ public class Game : MonoBehaviour {
             var wall = Instantiate(pfWall);
             wall.transform.SetParent(level);
             wall.transform.localPosition = (Vector3)pos;
+        }
+
+        int inputAreaX = 0;
+        for (int inputIdx = 0; inputIdx < levelWidth / levelHoleSize; inputIdx++) {
+            inputAreaX = inputIdx * levelHoleSize;
+            float modifier = inputIdx % 2 == 0 ? 1.1f : 1.0f;
+            for (int x = 0; x < levelHoleSize; x++) {
+                for (int y = 0; y < levelHoleSize; y++) {
+                    var inputArea = Instantiate(pfInputArea);
+                    inputArea.transform.SetParent(level);
+                    inputArea.transform.localPosition = new Vector2(inputAreaX + x, levelHeight + y + 1);
+                    inputArea.GetComponent<SpriteRenderer>().color *= modifier;
+                }
+            }
+        }
+
+        for (int x = inputAreaX + levelHoleSize; x < levelWidth + 1; x++) {
+            for (int y = levelHeight + 1; y < levelHeight + levelHoleSize + 1; y++) {
+                var pipe = Instantiate(x == (inputAreaX + levelHoleSize) ? pfPipeEnd : pfPipe);
+                pipe.transform.SetParent(level);
+                pipe.transform.localPosition = new Vector2(x, y);
+            }
         }
 
         for (int x = 0; x < levelHoleSize; x++) {
