@@ -11,7 +11,6 @@ public class TutorialSequence : MonoBehaviour {
 
     public Vector2 basePos;
     private int state = 0;
-    private int shapesBeforeSawing = 0;
     private Text tutorial;
 
     void Start() {

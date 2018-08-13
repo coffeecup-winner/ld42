@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using UnityEngine.UI;
 
 public enum BlockType {
     Green,
@@ -32,6 +33,7 @@ public class Game : MonoBehaviour {
     public static Game Instance { get; private set; }
 
     private Transform figures;
+    private Text shapeCounter;
 
     // playable means within walls
     public int levelPlayableHeight;
@@ -194,6 +196,7 @@ public class Game : MonoBehaviour {
 
     void Start() {
         figures = GameObject.Find("Figures").transform;
+        shapeCounter = GameObject.Find("ShapeCounter").GetComponent<Text>();
 
         generateLevel();
 
@@ -233,14 +236,6 @@ public class Game : MonoBehaviour {
             foreach (var figure in visibleFigures) {
                 figure.transform.localPosition += (Vector3)new Vector2(-levelHoleSize, 0);
             }
-            // if (allFigures.Count > 0) {
-            //     var newFigure = allFigures.Dequeue();
-            //     newFigure.transform.SetParent(figures);
-            //     newFigure.transform.localPosition = visiblePipePositions.Last();
-            //     visibleFigures.Enqueue(newFigure);
-            // } else {
-            //     // TODO: PUT YOU WIN MESSAGE HERE
-            // }
             if (remainingShapes.Count > 0) {
                 var desc = remainingShapes.Dequeue();
                 var newFigure = Figure.Create(FigureFactory.GetTemplate(desc.templateId), desc.blockType);
@@ -251,6 +246,8 @@ public class Game : MonoBehaviour {
                 // TODO: PUT YOU WIN MESSAGE HERE
             }
         }
+
+        shapeCounter.text = remainingShapes.Count.ToString();
     }
 
     public void OnBlockMouseDown(GameObject block) {
