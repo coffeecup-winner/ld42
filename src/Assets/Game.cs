@@ -142,7 +142,7 @@ public class Game : MonoBehaviour {
         transmutationCost = 1;
         maxFuel = 100;
         fuel = 10;
-        maxResearch = 5;
+        maxResearch = 6;
         research = 0;
 
         sawCostUpgraded = false;
