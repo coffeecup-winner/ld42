@@ -145,4 +145,13 @@ public class Game : MonoBehaviour {
 
         return field;
     }
+
+    public bool IsPositionAllowed(bool[,] collisionField, int x, int y) {
+        int output1 = levelWidthBeforeGreen;
+        int output2 = output1 + 1 + levelWidthGreenToRed;
+        int output3 = output2 + 1 + levelWidthRedToBlue;
+
+        return (y == -1 && (x == output1 || x == output2 || x == output3)) ||
+            (x >= 0 && x < levelWidth && y >= 0 && y < levelHeight && !collisionField[x, y]);
+    }
 }
