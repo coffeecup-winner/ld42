@@ -17,6 +17,17 @@ public enum MoveDirection {
     Down,
 }
 
+public class CollisionData {
+    public CollisionData(bool[,] field, Vector2 leftOfSawBlade, Vector2 rightOfSawBlade) {
+        Field = field;
+        LeftOfSawBlade = leftOfSawBlade;
+        RightOfSawBlade = rightOfSawBlade;
+    }
+    public bool[,] Field { get; private set; }
+    public Vector2 LeftOfSawBlade { get; private set; }
+    public Vector2 RightOfSawBlade { get; private set; }
+}
+
 public class Game : MonoBehaviour {
     public static Game Instance { get; private set; }
 
@@ -215,24 +226,30 @@ public class Game : MonoBehaviour {
         rotator.transform.localPosition = new Vector3(8.0f, 2.0f, 0.0f);
     }
 
-    public bool[,] GetCollisionField(HashSet<GameObject> exclude) {
+    public CollisionData GetCollisionData(HashSet<GameObject> exclude) {
         var field = new bool[levelWidth, levelHeight];
 
         var activeObjects = GameObject.FindGameObjectsWithTag("Figure")
             .Concat(GameObject.FindGameObjectsWithTag("Tool"))
             .Where(o => !exclude.Contains(o));
+
+        Vector2 leftOfSawBlade = new Vector2(0, 0); // to make compiler happy
         foreach (var obj in activeObjects) {
             int ox = (int)Math.Round(obj.transform.position.x);
             int oy = (int)Math.Round(obj.transform.position.y);
             foreach (var pos in obj.GetComponent<IMovable>().EnumerateAllFilledBlocks()) {
                 field[ox + (int)pos.x, oy + (int)pos.y] = true;
             }
+            var saw = obj.GetComponent<Saw>();
+            if (saw != null) {
+                leftOfSawBlade = saw.LeftOfSawBlade;
+            }
         }
 
-        return field;
+        return new CollisionData(field, leftOfSawBlade, leftOfSawBlade + new Vector2(1, 0));
     }
 
-    public bool IsMoveAllowed(bool[,] collisionField, int x, int y, MoveDirection direction) {
+    public bool IsMoveAllowed(CollisionData collisionData, int x, int y, MoveDirection direction) {
         int output1 = levelWidthBeforeGreen;
         int output2 = output1 + 1 + levelWidthGreenToRed;
         int output3 = output2 + 1 + levelWidthRedToBlue;
@@ -245,9 +262,13 @@ public class Game : MonoBehaviour {
             default: throw new InvalidOperationException();
         }
 
-        return (y >= levelHeight && x < 5 && direction == MoveDirection.Down) ||
-            (y == -1 && (x == output1 || x == output2 || x == output3)) ||
-            (x >= 0 && x < levelWidth && y >= 0 && y < levelHeight && !collisionField[x, y]);
+        bool isInInputArea = y >= levelHeight && x < levelHoleSize && direction == MoveDirection.Down;
+        bool isInOutputArea = y == -1 && (x == output1 || x == output2 || x == output3);
+        bool isClippingThroughBlocks = x < 0 || x >= levelWidth || y < 0 || y >= levelHeight || collisionData.Field[x, y];
+        bool isClippingThroughSawBlade = y == (int)collisionData.LeftOfSawBlade.y &&
+            (direction == MoveDirection.Left && x == (int)collisionData.LeftOfSawBlade.x ||
+             direction == MoveDirection.Right && x == (int)collisionData.RightOfSawBlade.x);
+        return isInInputArea || isInOutputArea || !(isClippingThroughBlocks || isClippingThroughSawBlade);
     }
 
     public bool TryOutput(BlockType type) {

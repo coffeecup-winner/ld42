@@ -297,13 +297,13 @@ public class Figure : MonoBehaviour, IMovable {
     }
 
     public void GetAllowedMoves(out bool left, out bool top, out bool right, out bool bottom) {
-        var collisionField = Game.Instance.GetCollisionField(new HashSet<GameObject> { gameObject });
+        var collisionData = Game.Instance.GetCollisionData(new HashSet<GameObject> { gameObject });
 
         var selfPos = new Vector2((float)Math.Round(transform.position.x), (float)Math.Round(transform.position.y));
         var positions = EnumerateAllFilledBlocks().Select(p => p + selfPos);
 
         Func<Vector2, MoveDirection, bool> isAllowed = (p, d) =>
-            Game.Instance.IsMoveAllowed(collisionField, (int)p.x, (int)p.y, d);
+            Game.Instance.IsMoveAllowed(collisionData, (int)p.x, (int)p.y, d);
         left = positions.All(p => isAllowed(p, MoveDirection.Left));
         top = positions.All(p => isAllowed(p, MoveDirection.Up));
         right = positions.All(p => isAllowed(p, MoveDirection.Right));

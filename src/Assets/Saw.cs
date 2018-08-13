@@ -5,6 +5,8 @@ using System.Linq;
 using UnityEngine;
 
 public class Saw : MonoBehaviour, IMovable {
+    public Vector2 LeftOfSawBlade { get { return (Vector2)transform.position + new Vector2(0, 1); } }
+
     void Update() {
         GameObject blockLeft = null;
         GameObject blockRight = null;

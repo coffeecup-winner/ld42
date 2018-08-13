@@ -61,6 +61,6 @@ public static class FigureFactory {
     }
 
     public static bool[,] GetTemplate() {
-        return templates[6];
+        return templates[7];
     }
 }
