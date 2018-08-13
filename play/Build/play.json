@@ -1,9 +1,9 @@
 {
 "companyName": "DefaultCompany",
 "productName": "LD42 Prep",
-"dataUrl": "www.data.unityweb",
-"wasmCodeUrl": "www.wasm.code.unityweb",
-"wasmFrameworkUrl": "www.wasm.framework.unityweb",
+"dataUrl": "play.data.unityweb",
+"wasmCodeUrl": "play.wasm.code.unityweb",
+"wasmFrameworkUrl": "play.wasm.framework.unityweb",
 "TOTAL_MEMORY": 268435456,
 "graphicsAPI": ["WebGL 2.0", "WebGL 1.0"],
 "webglContextAttributes": {"preserveDrawingBuffer": false},
