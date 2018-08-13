@@ -74,7 +74,7 @@ public class Figure : MonoBehaviour, IMovable {
     private Dictionary<int, HashSet<int>> links = new Dictionary<int, HashSet<int>>();
     private Dictionary<int, GameObject> visualBlocks = new Dictionary<int, GameObject>();
 
-    public BlockType Type { get; private set; }
+    public BlockType Type { get; set; }
     public int Width { get; private set; }
     public int Height { get; private set; }
 

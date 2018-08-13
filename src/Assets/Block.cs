@@ -8,9 +8,13 @@ public class Block : MonoBehaviour {
     private Color normalColor;
     private Color mouseOverColor;
 
-    void Start() {
+    public void ResetColors() {
         normalColor = GetComponent<SpriteRenderer>().color;
         mouseOverColor = new Color(normalColor.r * 1.1f, normalColor.g * 1.1f, normalColor.b * 1.1f);
+    }
+
+    void Start() {
+        ResetColors();
     }
 
     void Update() {

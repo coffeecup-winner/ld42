@@ -118,6 +118,7 @@ public class Game : MonoBehaviour {
     }
 
     public static int rotationCost { get; private set; }
+    public static int transmutationCost { get; private set; }
 
     void Awake() {
         Instance = this;
@@ -125,6 +126,7 @@ public class Game : MonoBehaviour {
         levelHeight = levelPlayableHeight;
 
         rotationCost = 1;
+        transmutationCost = 1;
         maxFuel = 100;
         fuel = 10;
         maxResearch = 10;
@@ -137,7 +139,7 @@ public class Game : MonoBehaviour {
         generateLevel();
 
         for (int i = 0; i < TotalNumberOfFigures; i++) {
-            allFigures.Enqueue(Figure.Create(FigureFactory.GetTemplate(), BlockType.Green));
+            allFigures.Enqueue(Figure.Create(FigureFactory.GetTemplate(), BlockType.Red));
         }
         for (int i = 0; i < visiblePipePositions.Count; i++) {
             var figure = allFigures.Dequeue();
@@ -190,6 +192,7 @@ public class Game : MonoBehaviour {
         var pfOutput = Resources.Load<GameObject>("Prefabs/Output");
         var pfSaw = Resources.Load<GameObject>("Prefabs/Saw");
         var pfRotator = Resources.Load<GameObject>("Prefabs/Rotator");
+        var pfTransmuter = Resources.Load<GameObject>("Prefabs/Transmuter");
 
         int emptyX1 = levelWidthBeforeGreen;
         int emptyX2 = emptyX1 + 1 + levelWidthGreenToRed;
@@ -293,6 +296,11 @@ public class Game : MonoBehaviour {
         rotator.name = "Rotator";
         rotator.transform.SetParent(tools);
         rotator.transform.localPosition = new Vector3(8.0f, 2.0f, 0.0f);
+
+        var transmuter = Instantiate(pfTransmuter);
+        transmuter.name = "Transmuter";
+        transmuter.transform.SetParent(tools);
+        transmuter.transform.localPosition = new Vector3(13.0f, 2.0f, 0.0f);
     }
 
     public CollisionData GetCollisionData(HashSet<GameObject> exclude) {
