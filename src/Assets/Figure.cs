@@ -101,9 +101,7 @@ public class Figure : MonoBehaviour, IMovable {
         return false;
     }
 
-    public void Rotate3x3(Vector2 rotatorAreaBottomLeft, bool rotateCW) {
-        const int RotatorSize = 3;
-
+    public void Rotate(Vector2 rotatorAreaBottomLeft, int rotatorSize, bool rotateCW) {
         var rotatedBlocks = new int[Height, Width];
         for (int x = 0; x < Width; x++) {
             for (int y = 0; y < Height; y++) {
@@ -135,10 +133,10 @@ public class Figure : MonoBehaviour, IMovable {
         Vector2 newBottomLeft;
         if (rotateCW) {
             var bottomRight = oldBottomLeft + new Vector2(Height - 1, 0);
-            newBottomLeft = new Vector2(bottomRight.y, RotatorSize - bottomRight.x - 1);
+            newBottomLeft = new Vector2(bottomRight.y, rotatorSize - bottomRight.x - 1);
         } else {
             var topLeft = oldBottomLeft + new Vector2(0, Width - 1);
-            newBottomLeft = new Vector2(RotatorSize - topLeft.y - 1, topLeft.x);
+            newBottomLeft = new Vector2(rotatorSize - topLeft.y - 1, topLeft.x);
         }
         transform.localPosition = rotatorAreaBottomLeft + newBottomLeft;
     }
