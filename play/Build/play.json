@@ -1,6 +1,6 @@
 {
-"companyName": "DefaultCompany",
-"productName": "LD42 Prep",
+"companyName": "LD42 Game",
+"productName": "Slay the Spacetris",
 "dataUrl": "play.data.unityweb",
 "wasmCodeUrl": "play.wasm.code.unityweb",
 "wasmFrameworkUrl": "play.wasm.framework.unityweb",
