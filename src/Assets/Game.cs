@@ -55,7 +55,7 @@ public class Game : MonoBehaviour {
 
         generateLevel();
 
-        float yMin = -2.5f;
+        float yMin = -3.5f;
         float yMax = levelHeight + levelHoleSize + 1 + 0.5f;
         Camera.main.transform.position = new Vector3(levelWidth * 0.5f, 0.5f * (yMin + yMax), -10.0f);
         Camera.main.orthographicSize = 0.5f * (yMax - yMin);
@@ -83,17 +83,21 @@ public class Game : MonoBehaviour {
         var outputPositions = new List<Vector2>();
 
         for (int x = -1; x <= levelWidth; x += 1) {
-            wallPositions.Add(new Vector2(x, -2));
+            // the topmost layer is full
+            wallPositions.Add(new Vector2(x, levelHeight + levelHoleSize + 1));
+
+            // the top/middle layer has a gap
+            if (x < 0 || x >= levelHoleSize)
+                wallPositions.Add(new Vector2(x, levelHeight));
+
             // the bottom layer needs gaps for color outputs
             if (x != emptyX1 && x != emptyX2 && x != emptyX3)
                 wallPositions.Add(new Vector2(x, -1));
             else
                 outputPositions.Add(new Vector2(x, -1));
-            // the top/middle layer has a gap
-            if (x < 0 || x >= levelHoleSize)
-                wallPositions.Add(new Vector2(x, levelHeight));
-            // the topmost layer is full
-            wallPositions.Add(new Vector2(x, levelHeight + levelHoleSize + 1));
+
+            // the very bottom layer is full
+            wallPositions.Add(new Vector2(x, -3));
         }
 
         for (int y = 0; y <= levelHeight + levelHoleSize; ++y) {
@@ -101,6 +105,11 @@ public class Game : MonoBehaviour {
             if (y < levelHeight)
                 wallPositions.Add(new Vector2(levelWidth, y));
         }
+
+        // extra regular walls
+        wallPositions.Add(new Vector2(-1, -2));
+        wallPositions.Add(new Vector2(emptyX3 - 1, -2));
+        wallPositions.Add(new Vector2(levelWidth, -2));
 
         foreach (Vector2 pos in wallPositions) {
             var wall = Instantiate(pfWall);
