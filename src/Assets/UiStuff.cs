@@ -15,9 +15,17 @@ public class UiStuff : MonoBehaviour
     RectTransform researchCanvas;
     RectTransform researchBar;
     Text researchText;
-    Image upgradeButton;
+    GameObject upgradeButton;
 
     Transform draggedBlock;
+
+    GameObject upgradeModal;
+    Button upgradeSawCost;
+    Button upgradeRotatorCost;
+    Button upgradeRotatorSize;
+    Button upgradeTransmuter1;
+    Button upgradeTransmuter2;
+    Button upgradeTransmuter3;
 
     void Awake() {
         Instance = this;
@@ -31,7 +39,17 @@ public class UiStuff : MonoBehaviour
         researchCanvas = GameObject.Find("ResearchCanvas").GetComponent<RectTransform>();
         researchText = GameObject.Find("ResearchText").GetComponent<Text>();
         researchBar = GameObject.Find("ResearchBar").GetComponent<RectTransform>();
-        upgradeButton = GameObject.Find("UpgradeButton").GetComponent<Image>();
+        upgradeButton = GameObject.Find("UpgradeButton");
+        upgradeButton.SetActive(false);
+
+        upgradeModal = GameObject.Find("UpgradeModal");
+        upgradeSawCost = GameObject.Find("UpgradeSawCost").GetComponent<Button>();
+        upgradeRotatorCost = GameObject.Find("UpgradeRotatorCost").GetComponent<Button>();
+        upgradeRotatorSize = GameObject.Find("UpgradeRotatorSize").GetComponent<Button>();
+        upgradeTransmuter1 = GameObject.Find("UpgradeTransmuter1").GetComponent<Button>();
+        upgradeTransmuter2 = GameObject.Find("UpgradeTransmuter2").GetComponent<Button>();
+        upgradeTransmuter3 = GameObject.Find("UpgradeTransmuter3").GetComponent<Button>();
+        upgradeModal.SetActive(false);
     }
 
     void Start() {
@@ -213,6 +231,39 @@ public class UiStuff : MonoBehaviour
     }
 
     public void EnableUpgradeButton() {
-        upgradeButton.enabled = true;
+        upgradeButton.SetActive(true);
+    }
+
+    public void UpgradeButtonClicked() {
+        upgradeButton.SetActive(false);
+        upgradeModal.SetActive(true);
+        upgradeSawCost.interactable = !Game.sawCostUpgraded;
+        upgradeRotatorCost.interactable = !Game.rotatorCostUpgraded;
+        upgradeRotatorSize.interactable = Game.rotatorSize == 2;
+        upgradeTransmuter1.interactable = Game.transmuterSize == 0;
+        upgradeTransmuter2.interactable = Game.transmuterSize == 1;
+        upgradeTransmuter3.interactable = Game.transmuterSize == 2;
+    }
+
+    public void ChooseUpgrade(string what) {
+        if (what == "sawCost") {
+            Game.sawCostUpgraded = true;
+        }
+        else if (what == "rotatorCost") {
+            Game.rotatorCostUpgraded = true;
+        }
+        else if (what == "rotatorSize") {
+            Game.rotatorSize = 3;
+        }
+        else if (what == "transmuter1") {
+            Game.transmuterSize = 1;
+        }
+        else if (what == "transmuter2") {
+            Game.transmuterSize = 2;
+        }
+        else if (what == "transmuter3") {
+            Game.transmuterSize = 3;
+        }
+        upgradeModal.SetActive(false);
     }
 }

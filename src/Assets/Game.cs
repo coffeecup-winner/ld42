@@ -119,6 +119,11 @@ public class Game : MonoBehaviour {
     public static int rotationCost { get; private set; }
     public static int transmutationCost { get; private set; }
 
+    public static bool sawCostUpgraded { get; set; }
+    public static bool rotatorCostUpgraded { get; set; }
+    public static int rotatorSize { get; set; }
+    public static int transmuterSize { get; set; }
+
     void Awake() {
         Instance = this;
         levelWidth = 3 + levelWidthBeforeGreen + levelWidthGreenToRed + levelWidthRedToBlue + levelWidthAfterBlue;
@@ -130,6 +135,11 @@ public class Game : MonoBehaviour {
         fuel = 10;
         maxResearch = 10;
         research = 0;
+
+        sawCostUpgraded = false;
+        rotatorCostUpgraded = false;
+        rotatorSize = 2;
+        transmuterSize = 0;
     }
 
     void Start() {
