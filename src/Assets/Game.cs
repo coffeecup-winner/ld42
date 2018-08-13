@@ -109,6 +109,8 @@ public class Game : MonoBehaviour {
         var level = GameObject.Find("Level").transform;
         var tools = GameObject.Find("Tools").transform;
         var pfWall = Resources.Load<GameObject>("Prefabs/Wall");
+        var pfDownArrow = Resources.Load<GameObject>("Prefabs/DownArrow");
+        var pfFloor = Resources.Load<GameObject>("Prefabs/Floor");
         var pfOutput = Resources.Load<GameObject>("Prefabs/Output");
         var pfSaw = Resources.Load<GameObject>("Prefabs/Saw");
         var pfRotator = Resources.Load<GameObject>("Prefabs/Rotator");
@@ -155,8 +157,26 @@ public class Game : MonoBehaviour {
             wall.transform.localPosition = (Vector3)pos;
         }
 
+        for (int x = 0; x < levelHoleSize; x++) {
+            var arrow = Instantiate(pfDownArrow);
+            arrow.transform.SetParent(level);
+            arrow.transform.localPosition = new Vector2(x, levelHeight);
+        }
+
+        for (int x = 0; x < levelWidth; x++) {
+            for (int y = 0; y < levelHeight; y++) {
+                var floor = Instantiate(pfFloor);
+                floor.transform.SetParent(level);
+                floor.transform.localPosition = new Vector2(x, y);
+            }
+        }
+
         var types = new[] { BlockType.Green, BlockType.Red, BlockType.Blue };
         for (int i = 0; i < 3; i++) {
+            var floor = Instantiate(pfFloor);
+            floor.transform.SetParent(level);
+            floor.transform.localPosition = (Vector3)outputPositions[i];
+
             var output = Instantiate(pfOutput);
             output.name = string.Format("Output ({0})", types[i]);
             output.GetComponent<Output>().Type = types[i];
