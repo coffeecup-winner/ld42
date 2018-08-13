@@ -169,10 +169,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   levelPlayableHeight: 8
-  levelWidthBeforeGreen: 2
-  levelWidthGreenToRed: 3
-  levelWidthRedToBlue: 3
-  levelWidthAfterBlue: 2
+  levelWidthBeforeGreen: 4
+  levelWidthGreenToRed: 6
+  levelWidthRedToBlue: 6
+  levelWidthAfterBlue: 4
   levelHoleSize: 5
   green: {r: 0.123353496, g: 0.5686275, b: 0.13400164, a: 1}
   blue: {r: 0.16447134, g: 0.5647059, b: 0.8301887, a: 1}

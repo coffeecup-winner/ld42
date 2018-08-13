@@ -44,13 +44,13 @@ public class UiStuff : MonoBehaviour
                 bool left, top, right, bottom;
                 figure.GetAllowedMoves(out left, out top, out right, out bottom);
                 if (!left)
-                    targetPos.x = Mathf.Max(snappedPos.x /*- 0.5f*/, targetPos.x);
+                    targetPos.x = Mathf.Max(snappedPos.x, targetPos.x);
                 if (!right)
-                    targetPos.x = Mathf.Min(snappedPos.x /*+ 0.5f*/, targetPos.x);
+                    targetPos.x = Mathf.Min(snappedPos.x, targetPos.x);
                 if (!bottom)
-                    targetPos.y = Mathf.Max(snappedPos.y /*- 0.5f*/, targetPos.y);
+                    targetPos.y = Mathf.Max(snappedPos.y, targetPos.y);
                 if (!top)
-                    targetPos.y = Mathf.Min(snappedPos.y /*+ 0.5f*/, targetPos.y);
+                    targetPos.y = Mathf.Min(snappedPos.y, targetPos.y);
             }
 
             Vector2 posToTarget = targetPos - currentPos;
@@ -91,8 +91,8 @@ public class UiStuff : MonoBehaviour
             }
 
             // move the figure, not the block
-            outputMove.x = Mathf.Clamp(outputMove.x, -0.5f, 0.5f);
-            outputMove.y = Mathf.Clamp(outputMove.y, -0.5f, 0.5f);
+            outputMove.x = Mathf.Clamp(outputMove.x, -0.75f, 0.75f);
+            outputMove.y = Mathf.Clamp(outputMove.y, -0.75f, 0.75f);
             draggedBlock.parent.position += outputMove;
             return;
         }

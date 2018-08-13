@@ -16,14 +16,14 @@ public class Game : MonoBehaviour {
     private Transform figures;
 
     // playable means within walls
-    public int levelPlayableHeight = 6;
+    public int levelPlayableHeight;
     // total playable width = these four + 3 (1 for each color output)
-    public int levelWidthBeforeGreen = 2;
-    public int levelWidthGreenToRed = 3;
-    public int levelWidthRedToBlue = 3;
-    public int levelWidthAfterBlue = 2;
+    public int levelWidthBeforeGreen;
+    public int levelWidthGreenToRed;
+    public int levelWidthRedToBlue;
+    public int levelWidthAfterBlue;
     // top left corner
-    public int levelHoleSize = 5;
+    public int levelHoleSize;
 
     // Colors
     public Color green;
@@ -56,7 +56,7 @@ public class Game : MonoBehaviour {
         generateLevel();
 
         float yMin = -2.5f;
-        float yMax = levelHeight + levelHoleSize + 0.5f;
+        float yMax = levelHeight + levelHoleSize + 1 + 0.5f;
         Camera.main.transform.position = new Vector3(levelWidth * 0.5f, 0.5f * (yMin + yMax), -10.0f);
         Camera.main.orthographicSize = 0.5f * (yMax - yMin);
     }
@@ -81,6 +81,7 @@ public class Game : MonoBehaviour {
 
         var wallPositions = new List<Vector2>();
         var outputPositions = new List<Vector2>();
+
         for (int x = -1; x <= levelWidth; x += 1) {
             wallPositions.Add(new Vector2(x, -2));
             // the bottom layer needs gaps for color outputs
@@ -88,14 +89,17 @@ public class Game : MonoBehaviour {
                 wallPositions.Add(new Vector2(x, -1));
             else
                 outputPositions.Add(new Vector2(x, -1));
-            // the top layer has a gap
-            if (x < 0 || x > levelHoleSize)
+            // the top/middle layer has a gap
+            if (x < 0 || x >= levelHoleSize)
                 wallPositions.Add(new Vector2(x, levelHeight));
+            // the topmost layer is full
+            wallPositions.Add(new Vector2(x, levelHeight + levelHoleSize + 1));
         }
 
-        for (int y = 0; y < levelHeight; ++y) {
+        for (int y = 0; y <= levelHeight + levelHoleSize; ++y) {
             wallPositions.Add(new Vector2(-1, y));
-            wallPositions.Add(new Vector2(levelWidth, y));
+            if (y < levelHeight)
+                wallPositions.Add(new Vector2(levelWidth, y));
         }
 
         foreach (Vector2 pos in wallPositions) {
