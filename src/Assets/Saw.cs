@@ -9,10 +9,10 @@ public class Saw : MonoBehaviour, IMovable {
         GameObject blockLeft = null;
         GameObject blockRight = null;
         foreach (var block in GameObject.FindGameObjectsWithTag("Block")) {
-            if (Math.Abs(block.transform.position.y - transform.position.y) < 1.1f) {
-                if (Math.Abs(block.transform.position.x - transform.position.x) < 0.1f) {
+            if (block.transform.position.y == transform.position.y + 1) {
+                if (block.transform.position.x == transform.position.x) {
                     blockLeft = block;
-                } else if (Math.Abs(block.transform.position.x - transform.position.x) < 1.1f) {
+                } else if (block.transform.position.x == transform.position.x + 1) {
                     blockRight = block;
                 }
             }

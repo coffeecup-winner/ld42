@@ -228,6 +228,7 @@ public class Figure : MonoBehaviour, IMovable {
         }
         blocks = newBlocks;
 
+        transform.position += new Vector3(minX, minY, 0.0f);
         for (int id = 1; id <= oldWidth * oldHeight; id++) {
             if (ids.Contains(id)) {
                 Debug.Log(string.Format("Figure #{0}: taking ownership of block {1}", this.id, id));
@@ -241,6 +242,7 @@ public class Figure : MonoBehaviour, IMovable {
 
     GameObject ShallowClone() {
         var clone = Instantiate(Resources.Load<GameObject>("Prefabs/Figure"));
+        clone.transform.position = transform.position;
 
         var cloneScript = clone.GetComponent<Figure>();
         cloneScript.id = IdGen++;
