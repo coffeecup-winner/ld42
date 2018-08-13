@@ -6,24 +6,21 @@ using UnityEngine;
 
 public class Rotator : MonoBehaviour, IMovable {
     private int areaSize = 2;
+    private GameObject activeArea3x3;
 
-    void Upgrade() {
-        // TODO: make checks against research
+    void Awake() {
+        activeArea3x3 = transform.Find("Active Area (size = 3)").gameObject;
+        activeArea3x3.SetActive(false);
+    }
 
+    public void Upgrade() {
         if (areaSize == 2) {
             areaSize = 3;
+            activeArea3x3.SetActive(true);
         } else {
             Debug.Log("Nothing to upgrade");
             return;
         }
-
-        // Hard-coded against prefab
-        var activeColor = transform.GetChild(4).GetChild(0).GetComponent<SpriteRenderer>().color;
-        var size3children = transform.GetChild(5);
-        for (int i = 0; i < size3children.childCount; i++) {
-            size3children.GetChild(i).GetComponent<SpriteRenderer>().color = activeColor;
-        }
-        transform.GetChild(3).GetComponent<SpriteRenderer>().enabled = false;
     }
 
     void OnMouseDown() {
@@ -35,9 +32,6 @@ public class Rotator : MonoBehaviour, IMovable {
                 rotateCW = false;
             } else if (Math.Abs(clickPos.x - (transform.position.x + 2)) <= 0.5f) {
                 rotateCW = true;
-            } else if (Math.Abs(clickPos.x - (transform.position.x + 1)) <= 0.5f) {
-                Upgrade();
-                return;
             } else {
                 return;
             }
