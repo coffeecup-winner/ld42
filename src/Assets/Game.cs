@@ -80,8 +80,16 @@ public class Game : MonoBehaviour {
             int ok = value;
             if (ok < 0)
                 ok = 0;
-            if (ok > maxResearch)
+
+            if (ok >= maxResearch) {
+                if (ok > maxResearch)
+                    Debug.LogWarning(string.Format("research went above max ({0} > {1}) ", ok, maxResearch));
                 ok = maxResearch;
+                ok = 0;
+                maxResearch += 5;
+                Instance.GrantUpgrade();
+            }
+
             UiStuff.setResearch(ok);
             researchField = ok;
         }
@@ -133,7 +141,7 @@ public class Game : MonoBehaviour {
     }
 
     void Update() {
-        research = (int)(Time.time - 2);
+        research = (int)Time.time + 7;
     }
 
     public void OnBlockMouseDown(GameObject block) {
@@ -306,7 +314,12 @@ public class Game : MonoBehaviour {
                 fuel += 1;
                 return true;
             case BlockType.Blue:
-                return true;
+                // block if the player has a pending upgrade
+                if (research < maxResearch) {
+                    research += 1;
+                    return true;
+                }
+                return false;
             case BlockType.Red:
                 if (fuel == 0) {
                     return false;
@@ -315,5 +328,9 @@ public class Game : MonoBehaviour {
                 return true;
             default: throw new InvalidOperationException();
         }
+    }
+
+    void GrantUpgrade() {
+        UiStuff.Instance.EnableUpgradeButton();
     }
 }

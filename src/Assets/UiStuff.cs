@@ -15,6 +15,7 @@ public class UiStuff : MonoBehaviour
     RectTransform researchCanvas;
     RectTransform researchBar;
     Text researchText;
+    Image upgradeButton;
 
     Transform draggedBlock;
 
@@ -30,6 +31,7 @@ public class UiStuff : MonoBehaviour
         researchCanvas = GameObject.Find("ResearchCanvas").GetComponent<RectTransform>();
         researchText = GameObject.Find("ResearchText").GetComponent<Text>();
         researchBar = GameObject.Find("ResearchBar").GetComponent<RectTransform>();
+        upgradeButton = GameObject.Find("UpgradeButton").GetComponent<Image>();
     }
 
     void Start() {
@@ -208,5 +210,9 @@ public class UiStuff : MonoBehaviour
                 yield return null;
         }
         fuelFlash.enabled = false;
+    }
+
+    public void EnableUpgradeButton() {
+        upgradeButton.enabled = true;
     }
 }
