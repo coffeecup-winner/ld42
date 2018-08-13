@@ -263,10 +263,12 @@ public class UiStuff : MonoBehaviour
         }
         else if (what == "transmuter2") {
             Game.transmuterSize = 2;
+            Game.transmutationCost = 2;
             GameObject.Find("Transmuter").GetComponent<Transmuter>().UpgradeSize(Game.transmuterSize);
         }
         else if (what == "transmuter3") {
             Game.transmuterSize = 3;
+            Game.transmutationCost = 3;
             GameObject.Find("Transmuter").GetComponent<Transmuter>().UpgradeSize(Game.transmuterSize);
         }
         upgradeModal.SetActive(false);

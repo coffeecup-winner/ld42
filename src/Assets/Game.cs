@@ -101,6 +101,7 @@ public class Game : MonoBehaviour {
                 if (ok > maxResearch)
                     Debug.LogWarning(string.Format("research went above max ({0} > {1}) ", ok, maxResearch));
                 ok = 0;
+                maxResearch += 2;
                 Instance.GrantUpgrade();
             }
 
@@ -126,7 +127,7 @@ public class Game : MonoBehaviour {
     }
 
     public static int rotationCost { get; set; }
-    public static int transmutationCost { get; private set; }
+    public static int transmutationCost { get; set; }
 
     public static bool sawCostUpgraded { get; set; }
     public static bool rotatorCostUpgraded { get; set; }
@@ -142,7 +143,7 @@ public class Game : MonoBehaviour {
         transmutationCost = 1;
         maxFuel = 100;
         fuel = 10;
-        maxResearch = 6;
+        maxResearch = 5;
         research = 0;
 
         sawCostUpgraded = false;
@@ -268,6 +269,7 @@ public class Game : MonoBehaviour {
         var pfSaw = Resources.Load<GameObject>("Prefabs/Saw");
         var pfRotator = Resources.Load<GameObject>("Prefabs/Rotator");
         var pfTransmuter = Resources.Load<GameObject>("Prefabs/Transmuter");
+        var pfTutorialArrow = Resources.Load<GameObject>("Prefabs/BlackArrow");
 
         int emptyX1 = levelWidthBeforeGreen;
         int emptyX2 = emptyX1 + 1 + levelWidthGreenToRed;
@@ -376,6 +378,16 @@ public class Game : MonoBehaviour {
         transmuter.name = "Transmuter";
         transmuter.transform.SetParent(tools);
         transmuter.transform.localPosition = new Vector3(16.0f, 1.0f, 0.0f);
+
+        var tutArrow = Instantiate(pfTutorialArrow);
+        tutArrow.name = "TutorialArrow";
+        tutArrow.transform.position = new Vector3(emptyX1, 0);
+        var tutSeq = tutArrow.GetComponent<TutorialSequence>();
+        tutSeq.basePos = tutSeq.greenPos;
+        tutSeq.greenPos = new Vector2(emptyX1, 0);
+        tutSeq.redPos = new Vector2(emptyX2, 0);
+        tutSeq.bluePos = new Vector2(emptyX3, 0);
+        tutSeq.sawPos = (Vector2)(saw.transform.position + new Vector3(0, 2, 0));
     }
 
     public CollisionData GetCollisionData(HashSet<GameObject> exclude) {
