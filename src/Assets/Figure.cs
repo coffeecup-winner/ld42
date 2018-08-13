@@ -7,22 +7,24 @@ using UnityEngine;
 public class Figure : MonoBehaviour, IMovable {
     private static int IdGen = 0;
 
-    public static GameObject GenerateRandomFigure(int w, int h, BlockType type) {
+    public static GameObject Create(bool[,] template, BlockType type) {
         var figure = Instantiate(Resources.Load<GameObject>("Prefabs/Figure"));
 
         var figureScript = figure.GetComponent<Figure>();
         figureScript.id = IdGen++;
         figureScript.Type = type;
-        figureScript.Width = w;
-        figureScript.Height = h;
-        figureScript.blocks = new int[w, h];
+        figureScript.Width = template.GetLength(0);
+        figureScript.Height = template.GetLength(1);
+        figureScript.blocks = new int[figureScript.Width, figureScript.Height];
         figure.name = String.Format("Figure #{0} {1}x{2}", figureScript.id, figureScript.Width, figureScript.Height);
 
-        // TODO: for now generate a 2x2 block
         figureScript.links[0] = new HashSet<int>();
         int id = 1;
-        for (int x = 0; x < 2; x++) {
-            for (int y = 0; y < 2; y++) {
+        for (int x = 0; x < figureScript.Width; x++) {
+            for (int y = 0; y < figureScript.Height; y++) {
+                if (!template[x, y]) {
+                    continue;
+                }
                 figureScript.blocks[x, y] = id;
                 figureScript.links[id] = new HashSet<int>();
                 if (x > 0) {
@@ -48,8 +50,8 @@ public class Figure : MonoBehaviour, IMovable {
         }
 
         var pfBlock = Resources.Load<GameObject>("Prefabs/Block");
-        for (int x = 0; x < w; x++) {
-            for (int y = 0; y < h; y++) {
+        for (int x = 0; x < figureScript.Width; x++) {
+            for (int y = 0; y < figureScript.Height; y++) {
                 if (figureScript.blocks[x, y] > 0) {
                     var block = Instantiate(pfBlock);
                     block.name = string.Format("Block " + figureScript.blocks[x, y]);
@@ -81,7 +83,6 @@ public class Figure : MonoBehaviour, IMovable {
     }
 
     public void CutRightOf(GameObject blockLeft) {
-        Debug.Log(blockLeft.ToString());
         // TODO: Create a block => id map if slow
         for (int id = 1; id <= maxId; id++) {
             if (visualBlocks.ContainsKey(id)) {
@@ -234,7 +235,6 @@ public class Figure : MonoBehaviour, IMovable {
         transform.position += new Vector3(minX, minY, 0.0f);
         for (int id = 1; id <= maxId; id++) {
             if (ids.Contains(id)) {
-                Debug.Log(string.Format("Figure #{0}: taking ownership of block {1}", this.id, id));
                 visualBlocks[id].transform.SetParent(transform);
             } else {
                 links.Remove(id);
@@ -281,7 +281,6 @@ public class Figure : MonoBehaviour, IMovable {
         int bottomBorder = links[bottomId].Contains(id) ? 0 : 1;
 
         string sprite = string.Format("Textures/block_{0}{1}{2}{3}", leftBorder, topBorder, rightBorder, bottomBorder);
-        Debug.Log(string.Format("[{0},{1}]: {2}", x, y, sprite));
         return Resources.Load<Sprite>(sprite);
     }
 

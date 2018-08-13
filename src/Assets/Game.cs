@@ -49,7 +49,7 @@ public class Game : MonoBehaviour {
         Instance = this;
         figures = GameObject.Find("Figures").transform;
 
-        var figure = Figure.GenerateRandomFigure(2, 2, BlockType.Green);
+        var figure = Figure.Create(FigureFactory.GetTemplate(), BlockType.Green);
         figure.transform.SetParent(figures);
         figure.transform.localPosition = Vector3.zero;
 
