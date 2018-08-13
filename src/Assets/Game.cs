@@ -52,6 +52,12 @@ public class Game : MonoBehaviour {
     public static int levelWidth { get; private set; }
     public static int levelHeight { get; private set; }
 
+    // figures pipe
+    public int TotalNumberOfFigures;
+    private static readonly List<Vector2> visiblePipePositions = new List<Vector2>();
+    private static readonly Queue<GameObject> visibleFigures = new Queue<GameObject>();
+    private static readonly Queue<GameObject> allFigures = new Queue<GameObject>();
+
     // resources
     public static int maxFuel { get; private set; }
     private static int fuelField;
@@ -128,11 +134,17 @@ public class Game : MonoBehaviour {
     void Start() {
         figures = GameObject.Find("Figures").transform;
 
-        var figure = Figure.Create(FigureFactory.GetTemplate(), BlockType.Green);
-        figure.transform.SetParent(figures);
-        figure.transform.localPosition = new Vector2(0, levelHeight + 1);
-
         generateLevel();
+
+        for (int i = 0; i < TotalNumberOfFigures; i++) {
+            allFigures.Enqueue(Figure.Create(FigureFactory.GetTemplate(), BlockType.Green));
+        }
+        for (int i = 0; i < visiblePipePositions.Count; i++) {
+            var figure = allFigures.Dequeue();
+            figure.transform.SetParent(figures);
+            figure.transform.localPosition = visiblePipePositions[i];
+            visibleFigures.Enqueue(figure);
+        }
 
         float yMin = -3.5f;
         float yMax = levelHeight + levelHoleSize + 1 + 0.5f;
@@ -141,6 +153,25 @@ public class Game : MonoBehaviour {
     }
 
     void Update() {
+        bool hasBlocksInInputArea = GameObject.FindGameObjectsWithTag("Block")
+            .Any(o => o.transform.parent.parent == figures && // ~= is it visible
+                 o.transform.position.x >= 0 && o.transform.position.x < levelHoleSize &&
+                 o.transform.position.y >= levelHeight && o.transform.position.y < levelHeight + levelHoleSize + 1);
+
+        if (!hasBlocksInInputArea && visibleFigures.Count > 0) {
+            visibleFigures.Dequeue(); // remove the one that was dragged out
+            foreach (var figure in visibleFigures) {
+                figure.transform.localPosition += (Vector3)new Vector2(-levelHoleSize, 0);
+            }
+            if (allFigures.Count > 0) {
+                var newFigure = allFigures.Dequeue();
+                newFigure.transform.SetParent(figures);
+                newFigure.transform.localPosition = visiblePipePositions.Last();
+                visibleFigures.Enqueue(newFigure);
+            }
+        }
+
+        // TEST
         research = (int)Time.time + 7;
     }
 
@@ -214,6 +245,7 @@ public class Game : MonoBehaviour {
                     inputArea.GetComponent<SpriteRenderer>().color *= modifier;
                 }
             }
+            visiblePipePositions.Add(new Vector2(inputAreaX, levelHeight + 1));
         }
 
         for (int x = inputAreaX + levelHoleSize; x < levelWidth + 1; x++) {
@@ -264,9 +296,10 @@ public class Game : MonoBehaviour {
     }
 
     public CollisionData GetCollisionData(HashSet<GameObject> exclude) {
-        var field = new bool[levelWidth, levelHeight];
+        var field = new bool[levelWidth, levelHeight + levelHoleSize + 1];
 
         var activeObjects = GameObject.FindGameObjectsWithTag("Figure")
+            .Where(f => f.transform.parent == figures)
             .Concat(GameObject.FindGameObjectsWithTag("Tool"))
             .Where(o => !exclude.Contains(o));
 

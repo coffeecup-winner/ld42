@@ -3,6 +3,7 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+using Random = UnityEngine.Random;
 
 public static class FigureFactory {
     private static readonly string TemplateString = @"
@@ -61,6 +62,6 @@ public static class FigureFactory {
     }
 
     public static bool[,] GetTemplate() {
-        return templates[7];
+        return templates[(int)Math.Round(Random.value * (templates.Count - 1))];
     }
 }
