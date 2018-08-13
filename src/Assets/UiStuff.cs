@@ -1,18 +1,31 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.UI;
 
 public class UiStuff : MonoBehaviour
 {
-    Transform figureContainer;
+    public static UiStuff Instance { get; private set; }
+
+    RectTransform fuelCanvas;
+    RectTransform fuelBar;
+    Text fuelText;
+
     Transform draggedBlock;
 
     void Awake() {
+        Instance = this;
+        fuelCanvas = GameObject.Find("FuelCanvas").GetComponent<RectTransform>();
+        fuelText = GameObject.Find("FuelText").GetComponent<Text>();
+        fuelBar = GameObject.Find("FuelBar").GetComponent<RectTransform>();
         draggedBlock = null;
     }
 
     void Start() {
-        figureContainer = GameObject.Find("Figures").transform;
+        int fuelWidth = Game.levelWidth - Game.Instance.levelWidthAfterBlue - 2;
+        fuelCanvas.localPosition = new Vector2(fuelWidth * 0.5f, -2.0f);
+        fuelCanvas.sizeDelta = new Vector2(fuelWidth * 100, 100);
+        setFuel(Game.fuel);
     }
     
     void Update() {
@@ -132,5 +145,18 @@ public class UiStuff : MonoBehaviour
                 a = s;
         }
         return a;
+    }
+
+    public static void setFuel(int value) {
+        var self = Instance;
+
+        if (self && self.fuelText)
+            self.fuelText.text = string.Format("{0}/{1}", value, Game.maxFuel);
+
+        if (self && self.fuelBar && self.fuelCanvas) {
+            Vector2 size = self.fuelCanvas.sizeDelta;
+            size.x = size.x * (value / (float)Game.maxFuel);
+            self.fuelBar.sizeDelta = size;
+        }
     }
 }

@@ -34,6 +34,26 @@ public class Game : MonoBehaviour {
     public static int levelWidth { get; private set; }
     public static int levelHeight { get; private set; }
 
+    // resources
+    public static int maxFuel { get; private set; }
+    private static int fuelField;
+    public static int fuel {
+        get {
+            return fuelField;
+        }
+        set {
+            int ok = value;
+            if (ok < 0)
+                ok = 0;
+            if (ok > maxFuel)
+                ok = maxFuel;
+            UiStuff.setFuel(ok);
+            fuelField = ok;
+        }
+    }
+    public static int research { get; set; }
+
+
     public static Color TypeToColor(BlockType type) {
         return type == BlockType.Green ? Game.Instance.green
             : type == BlockType.Blue ? Game.Instance.blue
@@ -41,12 +61,14 @@ public class Game : MonoBehaviour {
     }
 
     void Awake() {
+        Instance = this;
         levelWidth = 3 + levelWidthBeforeGreen + levelWidthGreenToRed + levelWidthRedToBlue + levelWidthAfterBlue;
         levelHeight = levelPlayableHeight;
+        maxFuel = 100;
+        fuel = 10;
     }
 
     void Start() {
-        Instance = this;
         figures = GameObject.Find("Figures").transform;
 
         var figure = Figure.Create(FigureFactory.GetTemplate(), BlockType.Green);
@@ -62,6 +84,12 @@ public class Game : MonoBehaviour {
     }
 
     void Update() {
+        if (Time.time < 10) {
+            fuel = (int)(maxFuel + 2 - Time.time);
+        }
+        else {
+            fuel = (int)(Time.time - 11);
+        }
     }
 
     public void OnBlockMouseDown(GameObject block) {
