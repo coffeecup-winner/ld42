@@ -52,10 +52,21 @@ public class Game : MonoBehaviour {
     public static int levelWidth { get; private set; }
     public static int levelHeight { get; private set; }
 
+    public class ShapeDesc {
+        public int templateId;
+        public BlockType blockType;
+
+        public ShapeDesc(int i, BlockType bt) {
+            templateId = i;
+            blockType = bt;
+        }
+    }
+
     // figures pipe
     private static readonly List<Vector2> visiblePipePositions = new List<Vector2>();
     private static readonly Queue<GameObject> visibleFigures = new Queue<GameObject>();
-    private static readonly Queue<GameObject> allFigures = new Queue<GameObject>();
+    // private static readonly Queue<GameObject> allFigures = new Queue<GameObject>();
+    private static readonly Queue<ShapeDesc> remainingShapes = new Queue<ShapeDesc>();
 
     // resources
     public static int maxFuel { get; private set; }
@@ -89,9 +100,7 @@ public class Game : MonoBehaviour {
             if (ok >= maxResearch) {
                 if (ok > maxResearch)
                     Debug.LogWarning(string.Format("research went above max ({0} > {1}) ", ok, maxResearch));
-                ok = maxResearch;
                 ok = 0;
-                maxResearch += 5;
                 Instance.GrantUpgrade();
             }
 
@@ -133,13 +142,53 @@ public class Game : MonoBehaviour {
         transmutationCost = 1;
         maxFuel = 100;
         fuel = 10;
-        maxResearch = 10;
+        maxResearch = 5;
         research = 0;
 
         sawCostUpgraded = false;
         rotatorCostUpgraded = false;
         rotatorSize = 2;
         transmuterSize = 0;
+
+        // 0-10: 9 green, 10 blue, 5 red
+        remainingShapes.Enqueue(new ShapeDesc(0, BlockType.Green));
+        remainingShapes.Enqueue(new ShapeDesc(0, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(0, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(1, BlockType.Green));
+        remainingShapes.Enqueue(new ShapeDesc(2, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(3, BlockType.Green));
+        remainingShapes.Enqueue(new ShapeDesc(8, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(15, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(6, BlockType.Green));
+        remainingShapes.Enqueue(new ShapeDesc(13, BlockType.Blue));
+        // 10-20: 11 green, 9 blue, 22 red
+        remainingShapes.Enqueue(new ShapeDesc(10, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(11, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(7, BlockType.Green));
+        remainingShapes.Enqueue(new ShapeDesc(16, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(18, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(22, BlockType.Green));
+        remainingShapes.Enqueue(new ShapeDesc(31, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(5, BlockType.Green));
+        remainingShapes.Enqueue(new ShapeDesc(12, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(30, BlockType.Red));
+        // 20-30: 4 green, 17 blue, 21 red,
+        remainingShapes.Enqueue(new ShapeDesc(26, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(19, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(23, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(9, BlockType.Green));
+        remainingShapes.Enqueue(new ShapeDesc(20, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(14, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(25, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(4, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(17, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(24, BlockType.Red));
+        // 30-34: whatever
+        remainingShapes.Enqueue(new ShapeDesc(29, BlockType.Green));
+        remainingShapes.Enqueue(new ShapeDesc(21, BlockType.Blue));
+        remainingShapes.Enqueue(new ShapeDesc(28, BlockType.Red));
+        remainingShapes.Enqueue(new ShapeDesc(27, BlockType.Red));
+        Debug.Log("TemplatesCount = " + FigureFactory.TemplatesCount);
     }
 
     void Start() {
@@ -147,15 +196,18 @@ public class Game : MonoBehaviour {
 
         generateLevel();
 
-        for (int i = 0; i < FigureFactory.TemplatesCount; i++) {
-            var blockType = BlockType.Green;
-            if (i % 2 == 1) {
-                blockType = i % 4 == 1 ? BlockType.Blue : BlockType.Red;
-            }
-            allFigures.Enqueue(Figure.Create(FigureFactory.GetTemplate(i), blockType));
-        }
-        for (int i = 0; i < visiblePipePositions.Count; i++) {
-            var figure = allFigures.Dequeue();
+        // for (int i = 0; i < FigureFactory.TemplatesCount; i++) {
+        //     var blockType = BlockType.Green;
+        //     if (i % 2 == 1) {
+        //         blockType = i % 4 == 1 ? BlockType.Blue : BlockType.Red;
+        //     }
+        //     allFigures.Enqueue(Figure.Create(FigureFactory.GetTemplate(i), blockType));
+        // }
+        for (int i = 0; i < visiblePipePositions.Count && remainingShapes.Count > 0; i++) {
+            // var figure = allFigures.Dequeue();
+            // var figure = Figure.Create(FigureFactory.GetTemplate(i), BlockType.Green);
+            var desc = remainingShapes.Dequeue();
+            var figure = Figure.Create(FigureFactory.GetTemplate(desc.templateId), desc.blockType);
             figure.transform.SetParent(figures);
             figure.transform.localPosition = visiblePipePositions[i];
             visibleFigures.Enqueue(figure);
@@ -166,6 +218,8 @@ public class Game : MonoBehaviour {
         Camera.main.transform.position = new Vector3(levelWidth * 0.5f, 0.5f * (yMin + yMax), -10.0f);
         Camera.main.orthographicSize = 0.5f * (yMax - yMin);
     }
+
+    // void nextFigure()
 
     void Update() {
         bool hasBlocksInInputArea = GameObject.FindGameObjectsWithTag("Block")
@@ -178,8 +232,17 @@ public class Game : MonoBehaviour {
             foreach (var figure in visibleFigures) {
                 figure.transform.localPosition += (Vector3)new Vector2(-levelHoleSize, 0);
             }
-            if (allFigures.Count > 0) {
-                var newFigure = allFigures.Dequeue();
+            // if (allFigures.Count > 0) {
+            //     var newFigure = allFigures.Dequeue();
+            //     newFigure.transform.SetParent(figures);
+            //     newFigure.transform.localPosition = visiblePipePositions.Last();
+            //     visibleFigures.Enqueue(newFigure);
+            // } else {
+            //     // TODO: PUT YOU WIN MESSAGE HERE
+            // }
+            if (remainingShapes.Count > 0) {
+                var desc = remainingShapes.Dequeue();
+                var newFigure = Figure.Create(FigureFactory.GetTemplate(desc.templateId), desc.blockType);
                 newFigure.transform.SetParent(figures);
                 newFigure.transform.localPosition = visiblePipePositions.Last();
                 visibleFigures.Enqueue(newFigure);
@@ -187,9 +250,6 @@ public class Game : MonoBehaviour {
                 // TODO: PUT YOU WIN MESSAGE HERE
             }
         }
-
-        // TEST
-        research = (int)Time.time + 7;
     }
 
     public void OnBlockMouseDown(GameObject block) {
@@ -305,17 +365,17 @@ public class Game : MonoBehaviour {
         var saw = Instantiate(pfSaw);
         saw.name = "Saw";
         saw.transform.SetParent(tools);
-        saw.transform.localPosition = new Vector3(4.0f, 1.0f, 0.0f);
+        saw.transform.localPosition = new Vector3(5.0f, 1.0f, 0.0f);
 
         var rotator = Instantiate(pfRotator);
         rotator.name = "Rotator";
         rotator.transform.SetParent(tools);
-        rotator.transform.localPosition = new Vector3(8.0f, 1.0f, 0.0f);
+        rotator.transform.localPosition = new Vector3(10.0f, 1.0f, 0.0f);
 
         var transmuter = Instantiate(pfTransmuter);
         transmuter.name = "Transmuter";
         transmuter.transform.SetParent(tools);
-        transmuter.transform.localPosition = new Vector3(13.0f, 1.0f, 0.0f);
+        transmuter.transform.localPosition = new Vector3(16.0f, 1.0f, 0.0f);
     }
 
     public CollisionData GetCollisionData(HashSet<GameObject> exclude) {
@@ -367,7 +427,7 @@ public class Game : MonoBehaviour {
     public bool TryOutput(BlockType type) {
         switch (type) {
             case BlockType.Green:
-                fuel += 1;
+                fuel += 2;
                 return true;
             case BlockType.Blue:
                 // block if the player has a pending upgrade

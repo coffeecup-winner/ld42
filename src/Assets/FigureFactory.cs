@@ -9,75 +9,109 @@ public static class FigureFactory {
     private static readonly string TemplateString = @"
         x
         -----
-        x
-        -----
         xx
         -----
         x
+        x
+        -----
+        x
+        xx
+        -----
+         x
+        xx
+        -----
+        xx
+        x
+        -----
+        xx
+         x
+        -----
+        xx
+        xx
         -----
         xxx
+        -----
+        x
+        xxx
+        -----
+         x
+        xxx
+        -----
+          x
+        xxx
+        -----
         x x
         xxx
         -----
-        xxxxx
-        x   x
-        xxxxx
-            x
-        xxxxx
+         xx
+        xx
         -----
-        xxxxx
-        x   x
-        xxxxx
-        x   x
-        xxxxx
+        xx
+         xx
         -----
-        xxxxx
-            x
-            x
-            x
-            x
-        -----
-        xxxxx
+        xxx
         x
-        xxxxx
-        x   x
-        xxxxx
         -----
-        xxxxx
+        xxx
+          x
+        -----
         x
-        xxxxx
-            x
-        xxxxx
-        -----
-        x   x
-        x   x
-        xxxxx
-            x
-            x
-        -----
-        xxxxx
-            x
-        xxxxx
-            x
-        xxxxx
-        -----
-        xxxxx
-            x
-        xxxxx
         x
-        xxxxx
+        x
         -----
-            x
-          xxx
-            x
-            x
-            x
+        xxx
+         x
         -----
-        xxxxx
-        x x x
-        xx xx
-        x x x
-        xxxxx
+         x
+        xx
+         x
+        -----
+        x
+        xx
+        x
+        -----
+        xx
+        x
+        x
+        -----
+        xx
+         x
+         x
+        -----
+        x
+        x
+        xxx
+        -----
+          x
+          x
+        xxx
+        -----
+        xxx
+        x
+        x
+        -----
+        xxx
+          x
+          x
+        -----
+        x
+        xx
+        xx
+        -----
+         x
+        xx
+        xx
+        -----
+        xx
+        xx
+        x
+        -----
+        xx
+        xx
+         x
+        -----
+        xx
+        xxx
         -----";
 
     private static readonly List<bool[,]> templates = new List<bool[,]>();

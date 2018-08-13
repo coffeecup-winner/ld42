@@ -1223,7 +1223,7 @@ MonoBehaviour:
   levelWidthGreenToRed: 6
   levelWidthRedToBlue: 6
   levelWidthAfterBlue: 4
-  levelHoleSize: 5
+  levelHoleSize: 3
   green: {r: 0.123353496, g: 0.5686275, b: 0.13400164, a: 1}
   blue: {r: 0.16447134, g: 0.5647059, b: 0.8301887, a: 1}
   red: {r: 0.72156864, g: 0.1546814, b: 0.1546814, a: 1}
