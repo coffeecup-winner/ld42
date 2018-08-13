@@ -10,6 +10,13 @@ public enum BlockType {
     Red,
 }
 
+public enum MoveDirection {
+    Left,
+    Up,
+    Right,
+    Down,
+}
+
 public class Game : MonoBehaviour {
     public static Game Instance { get; private set; }
 
@@ -73,7 +80,7 @@ public class Game : MonoBehaviour {
 
         var figure = Figure.Create(FigureFactory.GetTemplate(), BlockType.Green);
         figure.transform.SetParent(figures);
-        figure.transform.localPosition = Vector3.zero;
+        figure.transform.localPosition = new Vector2(0, levelHeight + 1);
 
         generateLevel();
 
@@ -183,12 +190,21 @@ public class Game : MonoBehaviour {
         return field;
     }
 
-    public bool IsPositionAllowed(bool[,] collisionField, int x, int y) {
+    public bool IsMoveAllowed(bool[,] collisionField, int x, int y, MoveDirection direction) {
         int output1 = levelWidthBeforeGreen;
         int output2 = output1 + 1 + levelWidthGreenToRed;
         int output3 = output2 + 1 + levelWidthRedToBlue;
 
-        return (y == -1 && (x == output1 || x == output2 || x == output3)) ||
+        switch (direction) {
+            case MoveDirection.Left: x -= 1; break;
+            case MoveDirection.Up: y += 1; break;
+            case MoveDirection.Right: x += 1; break;
+            case MoveDirection.Down: y -= 1; break;
+            default: throw new InvalidOperationException();
+        }
+
+        return (y >= levelHeight && x < 5 && direction == MoveDirection.Down) ||
+            (y == -1 && (x == output1 || x == output2 || x == output3)) ||
             (x >= 0 && x < levelWidth && y >= 0 && y < levelHeight && !collisionField[x, y]);
     }
 

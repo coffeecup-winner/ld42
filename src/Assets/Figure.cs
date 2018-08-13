@@ -300,10 +300,11 @@ public class Figure : MonoBehaviour, IMovable {
         var selfPos = new Vector2((float)Math.Round(transform.position.x), (float)Math.Round(transform.position.y));
         var positions = EnumerateAllFilledBlocks().Select(p => p + selfPos);
 
-        Func<Vector2, bool> isAllowed = p => Game.Instance.IsPositionAllowed(collisionField, (int)p.x, (int)p.y);
-        left = positions.Select(p => p += new Vector2(-1, 0)).All(isAllowed);
-        top = positions.Select(p => p += new Vector2(0, 1)).All(isAllowed);
-        right = positions.Select(p => p += new Vector2(1, 0)).All(isAllowed);
-        bottom = positions.Select(p => p += new Vector2(0, -1)).All(isAllowed);
+        Func<Vector2, MoveDirection, bool> isAllowed = (p, d) =>
+            Game.Instance.IsMoveAllowed(collisionField, (int)p.x, (int)p.y, d);
+        left = positions.All(p => isAllowed(p, MoveDirection.Left));
+        top = positions.All(p => isAllowed(p, MoveDirection.Up));
+        right = positions.All(p => isAllowed(p, MoveDirection.Right));
+        bottom = positions.All(p => isAllowed(p, MoveDirection.Down));
     }
 }
