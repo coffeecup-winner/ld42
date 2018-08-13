@@ -1,3 +1,3 @@
-$GameName - A Ludum Dare 42 Game
+Slay the Spacetris - A Ludum Dare 42 Game Submission
 
 See it here: https://coffeecup-winner.github.io/ld42/play
